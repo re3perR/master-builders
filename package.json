@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "db:test:prepare": "tsx scripts/prepare-test-db.ts",
-    "test:db": "node --import tsx --test --test-concurrency=1 tests/db/*.test.ts"
+    "test:db": "node --import tsx --test --test-concurrency=1 tests/db/*.test.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "engines": {
     "node": ">=20.9"
@@ -41,6 +43,7 @@
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.1",
     "pg": "8.23.1",
+    "prettier": "3.9.10",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.15",
     "typescript": "5.9.3"

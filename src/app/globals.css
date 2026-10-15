@@ -2,15 +2,70 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-ink: #17212b;
+  --color-ink-muted: #526173;
+  --color-canvas: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-line: #d5dee7;
+  --color-field: #7c8997;
+  --color-focus: #2563eb;
+  --color-nav: #17212b;
+
+  --color-brand: #c2410c;
+  --color-brand-hover: #9a3412;
+  --color-brand-soft: #fff1e8;
+
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fef2f2;
+  --color-success: #15803d;
+  --color-success-soft: #f0fdf4;
+  --color-warning: #a16207;
+  --color-warning-soft: #fefce8;
+
+  --color-status-assigned: #1d4ed8;
+  --color-status-assigned-soft: #eff6ff;
+  --color-status-accepted: #6d28d9;
+  --color-status-accepted-soft: #f5f3ff;
+  --color-status-progress: #c2410c;
+  --color-status-progress-soft: #fff7ed;
+  --color-status-review: #4338ca;
+  --color-status-review-soft: #eef2ff;
+  --color-status-done: #15803d;
+  --color-status-done-soft: #f0fdf4;
+  --color-status-cancelled: #4b5563;
+  --color-status-cancelled-soft: #f3f4f6;
+
+  --radius-card: 10px;
 }
 
 html {
-  color: #17212b;
-  background: #f5f7fa;
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.5;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

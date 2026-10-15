@@ -1,6 +1,8 @@
 function required(name: string, value: string | undefined) {
   if (!value) {
-    throw new Error(`Не задана переменная окружения ${name}. Скопируйте .env.example в .env.local и заполните значения.`);
+    throw new Error(
+      `Не задана переменная окружения ${name}. Скопируйте .env.example в .env.local и заполните значения.`,
+    );
   }
   return value;
 }

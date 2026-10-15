@@ -1,0 +1,15 @@
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/cn";
+
+export function Spinner({ className, label = "Загрузка" }: { className?: string; label?: string }) {
+  return (
+    <span role="status" className="inline-flex items-center">
+      <Loader2 aria-hidden className={cn("size-4 animate-spin", className)} />
+      <span className="sr-only">{label}</span>
+    </span>
+  );
+}
+
+export function Skeleton({ className }: { className?: string }) {
+  return <div aria-hidden className={cn("animate-pulse rounded-md bg-line/60", className)} />;
+}
