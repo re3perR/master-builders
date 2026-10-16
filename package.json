@@ -13,7 +13,9 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "user:password": "tsx --env-file=.env.local scripts/set-password.ts"
+    "user:password": "tsx --env-file=.env.local scripts/set-password.ts",
+    "cleanup:uploads": "tsx --env-file=.env.local scripts/cleanup-uploads.ts",
+    "seed:photos": "tsx --env-file=.env.local scripts/seed-photos.ts"
   },
   "engines": {
     "node": ">=20.9"
