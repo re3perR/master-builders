@@ -1,0 +1,20 @@
+import Link from "next/link";
+import { Alert } from "@/components/ui/alert";
+import type { AppError } from "@/lib/errors";
+
+export function ActionError({ error, className }: { error: AppError | null; className?: string }) {
+  if (!error) return null;
+  return (
+    <Alert variant={error.kind === "conflict" || error.kind === "state" ? "warning" : "danger"} className={className}>
+      {error.message}
+      {error.kind === "auth" ? (
+        <>
+          {" "}
+          <Link href="/login?expired=1" className="font-medium underline">
+            Перейти ко входу
+          </Link>
+        </>
+      ) : null}
+    </Alert>
+  );
+}
