@@ -11,7 +11,8 @@
     "db:test:prepare": "tsx scripts/prepare-test-db.ts",
     "test:db": "node --import tsx --test --test-concurrency=1 tests/db/*.test.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "user:password": "tsx --env-file=.env.local scripts/set-password.ts"
   },
   "engines": {
     "node": ">=20.9"
