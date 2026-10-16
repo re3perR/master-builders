@@ -1,3 +1,8 @@
+import type { FeatureFunctions as DirectoryFunctions } from "@/features/directory/db-types";
+import type { FeatureFunctions as FieldFunctions } from "@/features/field/db-types";
+import type { FeatureFunctions as OverviewFunctions } from "@/features/overview/db-types";
+import type { FeatureFunctions as TaskFunctions } from "@/features/tasks/db-types";
+
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type UserRole = "dispatcher" | "foreman" | "manager";
@@ -186,7 +191,7 @@ export type TaskMutationResult =
     }
   | { result: "overlaps"; overlaps: OverlapItem[] };
 
-type Fn<Args, Returns> = { Args: Args; Returns: Returns };
+export type Fn<Args, Returns> = { Args: Args; Returns: Returns };
 
 export type Database = {
   public: {
@@ -205,108 +210,7 @@ export type Database = {
       task_events: Table<TaskEvent>;
     };
     Views: Record<string, never>;
-    Functions: {
-      create_task: Fn<
-        {
-          p_title: string;
-          p_description: string;
-          p_site_id: string;
-          p_crew_id: string;
-          p_priority: TaskPriority;
-          p_planned_start: string;
-          p_planned_end: string;
-          p_client_key: string;
-          p_acknowledged_overlaps?: string[];
-          p_source_task_id?: string | null;
-        },
-        TaskMutationResult
-      >;
-      update_task_details: Fn<
-        {
-          p_task_id: string;
-          p_expected_version: number;
-          p_title: string;
-          p_description: string;
-          p_priority: TaskPriority;
-          p_address_snapshot: string;
-          p_access_note_snapshot: string | null;
-          p_client_key: string;
-        },
-        TaskMutationResult
-      >;
-      reschedule_task: Fn<
-        {
-          p_task_id: string;
-          p_expected_version: number;
-          p_planned_start: string;
-          p_planned_end: string;
-          p_reason: string;
-          p_client_key: string;
-          p_acknowledged_overlaps?: string[];
-        },
-        TaskMutationResult
-      >;
-      reassign_task: Fn<
-        {
-          p_task_id: string;
-          p_expected_version: number;
-          p_crew_id: string;
-          p_reason: string;
-          p_client_key: string;
-          p_acknowledged_overlaps?: string[];
-        },
-        TaskMutationResult
-      >;
-      cancel_task: Fn<
-        { p_task_id: string; p_expected_version: number; p_reason: string; p_client_key: string },
-        TaskMutationResult
-      >;
-      accept_task: Fn<{ p_task_id: string; p_expected_version: number; p_client_key: string }, TaskMutationResult>;
-      start_task: Fn<{ p_task_id: string; p_expected_version: number; p_client_key: string }, TaskMutationResult>;
-      open_obstacle: Fn<
-        {
-          p_task_id: string;
-          p_expected_version: number;
-          p_category: ObstacleCategory;
-          p_reason: string;
-          p_client_key: string;
-        },
-        TaskMutationResult
-      >;
-      close_obstacle: Fn<
-        { p_task_id: string; p_expected_version: number; p_comment: string; p_client_key: string },
-        TaskMutationResult
-      >;
-      post_message: Fn<
-        { p_task_id: string; p_body: string; p_client_key: string },
-        { result: "ok"; message_id: string; created_at: string }
-      >;
-      register_upload: Fn<
-        { p_task_id: string; p_mime_type: string; p_size_bytes: number; p_width: number; p_height: number },
-        { result: "ok"; upload_id: string; storage_path: string }
-      >;
-      discard_upload: Fn<{ p_upload_id: string }, { result: "ok"; storage_path: string | null }>;
-      submit_report: Fn<
-        {
-          p_task_id: string;
-          p_expected_version: number;
-          p_comment: string;
-          p_upload_ids: string[];
-          p_client_key: string;
-        },
-        TaskMutationResult
-      >;
-      approve_report: Fn<
-        { p_task_id: string; p_expected_version: number; p_report_id: string; p_client_key: string },
-        TaskMutationResult
-      >;
-      return_report: Fn<
-        { p_task_id: string; p_expected_version: number; p_report_id: string; p_note: string; p_client_key: string },
-        TaskMutationResult
-      >;
-      stale_uploads: Fn<{ p_older_than?: string }, { upload_id: string | null; storage_path: string }[]>;
-      forget_stale_upload: Fn<{ p_upload_id: string }, undefined>;
-    };
+    Functions: CoreFunctions & TaskFunctions & FieldFunctions & OverviewFunctions & DirectoryFunctions;
     Enums: {
       user_role: UserRole;
       task_status: TaskStatus;
@@ -316,4 +220,107 @@ export type Database = {
     };
     CompositeTypes: Record<string, never>;
   };
+};
+
+export type CoreFunctions = {
+  create_task: Fn<
+    {
+      p_title: string;
+      p_description: string;
+      p_site_id: string;
+      p_crew_id: string;
+      p_priority: TaskPriority;
+      p_planned_start: string;
+      p_planned_end: string;
+      p_client_key: string;
+      p_acknowledged_overlaps?: string[];
+      p_source_task_id?: string | null;
+    },
+    TaskMutationResult
+  >;
+  update_task_details: Fn<
+    {
+      p_task_id: string;
+      p_expected_version: number;
+      p_title: string;
+      p_description: string;
+      p_priority: TaskPriority;
+      p_address_snapshot: string;
+      p_access_note_snapshot: string | null;
+      p_client_key: string;
+    },
+    TaskMutationResult
+  >;
+  reschedule_task: Fn<
+    {
+      p_task_id: string;
+      p_expected_version: number;
+      p_planned_start: string;
+      p_planned_end: string;
+      p_reason: string;
+      p_client_key: string;
+      p_acknowledged_overlaps?: string[];
+    },
+    TaskMutationResult
+  >;
+  reassign_task: Fn<
+    {
+      p_task_id: string;
+      p_expected_version: number;
+      p_crew_id: string;
+      p_reason: string;
+      p_client_key: string;
+      p_acknowledged_overlaps?: string[];
+    },
+    TaskMutationResult
+  >;
+  cancel_task: Fn<
+    { p_task_id: string; p_expected_version: number; p_reason: string; p_client_key: string },
+    TaskMutationResult
+  >;
+  accept_task: Fn<{ p_task_id: string; p_expected_version: number; p_client_key: string }, TaskMutationResult>;
+  start_task: Fn<{ p_task_id: string; p_expected_version: number; p_client_key: string }, TaskMutationResult>;
+  open_obstacle: Fn<
+    {
+      p_task_id: string;
+      p_expected_version: number;
+      p_category: ObstacleCategory;
+      p_reason: string;
+      p_client_key: string;
+    },
+    TaskMutationResult
+  >;
+  close_obstacle: Fn<
+    { p_task_id: string; p_expected_version: number; p_comment: string; p_client_key: string },
+    TaskMutationResult
+  >;
+  post_message: Fn<
+    { p_task_id: string; p_body: string; p_client_key: string },
+    { result: "ok"; message_id: string; created_at: string }
+  >;
+  register_upload: Fn<
+    { p_task_id: string; p_mime_type: string; p_size_bytes: number; p_width: number; p_height: number },
+    { result: "ok"; upload_id: string; storage_path: string }
+  >;
+  discard_upload: Fn<{ p_upload_id: string }, { result: "ok"; storage_path: string | null }>;
+  submit_report: Fn<
+    {
+      p_task_id: string;
+      p_expected_version: number;
+      p_comment: string;
+      p_upload_ids: string[];
+      p_client_key: string;
+    },
+    TaskMutationResult
+  >;
+  approve_report: Fn<
+    { p_task_id: string; p_expected_version: number; p_report_id: string; p_client_key: string },
+    TaskMutationResult
+  >;
+  return_report: Fn<
+    { p_task_id: string; p_expected_version: number; p_report_id: string; p_note: string; p_client_key: string },
+    TaskMutationResult
+  >;
+  stale_uploads: Fn<{ p_older_than?: string }, { upload_id: string | null; storage_path: string }[]>;
+  forget_stale_upload: Fn<{ p_upload_id: string }, undefined>;
 };
