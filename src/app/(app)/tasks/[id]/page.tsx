@@ -33,7 +33,7 @@ export default async function TaskPage({ params, searchParams }: PageProps<"/tas
         <ReviewActions card={card} viewer={viewer} />
         <DispatcherActions card={card} viewer={viewer} />
       </div>
-      <TaskTabs taskId={card.id} active={tab} />
+      <TaskTabs taskId={card.id} active={tab} counts={{ discussion: card.message_count, reports: card.report_count }} />
       {tab === "details" ? <TaskDetails card={card} /> : null}
       {tab === "discussion" ? <DiscussionTab card={card} viewer={viewer} /> : null}
       {tab === "reports" ? <ReportsTab card={card} viewer={viewer} /> : null}
