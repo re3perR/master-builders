@@ -18,3 +18,5 @@ supabase/.branches
 
 .DS_Store
 *.log
+
+backup
