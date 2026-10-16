@@ -1,7 +1,7 @@
 import type { FeatureFunctions as DirectoryFunctions } from "@/features/directory/db-types";
 import type { FeatureFunctions as FieldFunctions } from "@/features/field/db-types";
 import type { FeatureFunctions as OverviewFunctions } from "@/features/overview/db-types";
-import type { FeatureFunctions as TaskFunctions } from "@/features/tasks/db-types";
+import type { FeatureFunctions as TaskFunctions, FeatureViews as TaskViews } from "@/features/tasks/db-types";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -209,7 +209,7 @@ export type Database = {
       uploads: Table<Upload>;
       task_events: Table<TaskEvent>;
     };
-    Views: Record<string, never>;
+    Views: TaskViews;
     Functions: CoreFunctions & TaskFunctions & FieldFunctions & OverviewFunctions & DirectoryFunctions;
     Enums: {
       user_role: UserRole;
