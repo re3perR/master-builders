@@ -119,12 +119,10 @@ export async function stagePhoto(db: Db, userId: string, taskId: string) {
     p_width: 1600,
     p_height: 1200,
   });
-  await as(db, userId, () =>
-    db.query("insert into storage.objects (bucket_id, name, owner) values ('task-photos', $1, $2)", [
-      staged.storage_path,
-      userId,
-    ]),
-  );
+  await db.query("insert into storage.objects (bucket_id, name, metadata) values ('task-photos', $1, $2)", [
+    staged.storage_path,
+    { size: 120000, mimetype: "image/jpeg" },
+  ]);
   return staged.upload_id;
 }
 

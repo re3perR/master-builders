@@ -156,9 +156,7 @@ describe("хранилище фото", () => {
         p_width: 100,
         p_height: 100,
       });
-      await as(db, users.lebedev, () =>
-        db.query("insert into storage.objects (bucket_id, name) values ('task-photos', $1)", [staged.storage_path]),
-      );
+      await db.query("insert into storage.objects (bucket_id, name) values ('task-photos', $1)", [staged.storage_path]);
       const dispatcher = await select(db, users.dispatcherNorth, "select 1 from storage.objects where name = $1", [
         staged.storage_path,
       ]);

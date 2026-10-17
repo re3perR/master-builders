@@ -4,6 +4,7 @@ import { PhotoRejected, processPhoto, type PhotoProblem } from "@/features/repor
 import { getViewer } from "@/lib/auth";
 import type { AppError, ErrorKind } from "@/lib/errors";
 import { callRpc } from "@/lib/rpc";
+import { storeTaskPhoto } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -126,13 +127,7 @@ export async function POST(request: NextRequest, context: RouteContext<"/api/tas
   });
   if (!registered.ok) return failure(registered.error);
 
-  const { error: storageError } = await supabase.storage
-    .from("task-photos")
-    .upload(registered.data.storage_path, photo.data, {
-      contentType: photo.mimeType,
-      upsert: false,
-      cacheControl: "300",
-    });
+  const { error: storageError } = await storeTaskPhoto(registered.data.storage_path, photo.data, photo.mimeType);
   if (storageError) {
     await callRpc("discard_upload", { p_upload_id: registered.data.upload_id });
     return failure({ kind: "temporary", message: "Не удалось сохранить фото. Повторите загрузку." });
