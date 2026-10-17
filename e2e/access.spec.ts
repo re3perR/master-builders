@@ -40,6 +40,13 @@ async function expectButtons(page: Page, names: string[]) {
   }
 }
 
+async function expectForbidden(page: Page, role: string, home: string) {
+  await expect(page).toHaveURL(/\/forbidden$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Нет доступа" })).toBeVisible();
+  await expect(page.getByText(`недоступен для роли «${role}»`)).toBeVisible();
+  await expect(page.getByRole("link", { name: "На главную" })).toHaveAttribute("href", home);
+}
+
 async function expectNoButtons(page: Page, names: string[]) {
   for (const name of names) {
     await expect(page.getByRole("button", { name, exact: true })).toHaveCount(0);
@@ -109,7 +116,7 @@ test("руководитель видит задание только для ч�
   expect(upload.status()).toBe(403);
 
   await page.goto("/tasks/new");
-  await expect(page).toHaveURL(/\/overview$/);
+  await expectForbidden(page, "Руководитель", "/overview");
   await expect(page.getByLabel("Название")).toHaveCount(0);
 
   await page.goto("/sites");
@@ -126,12 +133,16 @@ test("бригадир не открывает страницы и действ�
   const siteUrl = new URL(page.url()).pathname;
 
   await signIn(page, accounts.petrov);
-  for (const path of ["/tasks/new", "/tasks", "/sites", "/overview"]) {
+  for (const path of ["/tasks/new", "/tasks", "/sites"]) {
     await page.goto(path);
-    await expect(page).toHaveURL(/\/my$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Мои задания" })).toBeVisible();
+    await expectForbidden(page, "Бригадир", "/my");
   }
   await expect(page.getByLabel("Название")).toHaveCount(0);
+  await page.getByRole("link", { name: "На главную" }).click();
+  await expect(page).toHaveURL(/\/my$/);
+  await page.goto("/overview");
+  await expect(page).toHaveURL(/\/my$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Мои задания" })).toBeVisible();
 
   await page.goto(url);
   await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
