@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { safeNext } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthFormState = {
@@ -10,11 +11,6 @@ export type AuthFormState = {
   message?: string;
   email?: string;
 };
-
-function safeNext(value: FormDataEntryValue | null) {
-  const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/overview";
-}
 
 const credentials = z.object({
   email: z.string().trim().toLowerCase().email(),

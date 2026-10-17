@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNext } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
-  const nextParam = searchParams.get("next") ?? "/overview";
-  const next = nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/overview";
+  const next = safeNext(searchParams.get("next"));
 
   if (code) {
     const supabase = await createClient();
