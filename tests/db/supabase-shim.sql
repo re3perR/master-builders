@@ -36,6 +36,12 @@ create table if not exists auth.users (
   email_change varchar(255) default ''
 );
 
+create table if not exists auth.sessions (
+  id uuid primary key,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  not_after timestamptz
+);
+
 create table if not exists auth.identities (
   id uuid primary key default gen_random_uuid(),
   provider_id text not null,

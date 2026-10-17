@@ -13,13 +13,27 @@ export type Viewer = {
   crew: Crew | null;
 };
 
+const localOrigin = "http://local.invalid";
+
+export function safeNext(value: unknown, fallback = "/overview") {
+  if (typeof value !== "string" || !value.startsWith("/") || !URL.canParse(value, localOrigin)) return fallback;
+  const url = new URL(value, localOrigin);
+  const path = url.pathname + url.search + url.hash;
+  if (url.origin !== localOrigin || path.startsWith("//") || url.pathname.startsWith("/login")) return fallback;
+  return path;
+}
+
+export function homePath(role: UserRole) {
+  return role === "foreman" ? "/my" : "/overview";
+}
+
 export const getViewer = cache(async (): Promise<Viewer | null> => {
   const supabase = await createClient();
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims?.sub;
-  if (!userId) return null;
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
+  if (!user) return null;
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
   if (!profile) return null;
 
   const [{ data: company }, { data: division }, { data: crew }] = await Promise.all([
@@ -33,8 +47,8 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   if (!company || !division) return null;
 
   return {
-    userId,
-    email: typeof claims.claims.email === "string" ? claims.claims.email : null,
+    userId: user.id,
+    email: user.email ?? null,
     profile,
     company,
     division,
@@ -45,6 +59,6 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
 export async function requireViewer(roles?: UserRole[]) {
   const viewer = await getViewer();
   if (!viewer) redirect("/login?expired=1");
-  if (roles && !roles.includes(viewer.profile.role)) redirect("/overview");
+  if (roles && !roles.includes(viewer.profile.role)) redirect("/forbidden");
   return viewer;
 }

@@ -5,10 +5,6 @@ import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
 
 const publicPaths = ["/", "/login", "/forgot-password", "/reset-password", "/auth/callback"];
 
-function isPublic(pathname: string) {
-  return publicPaths.includes(pathname) || pathname.startsWith("/_next") || pathname === "/favicon.ico";
-}
-
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -33,7 +29,7 @@ export async function updateSession(request: NextRequest) {
   const signedIn = Boolean(data?.claims?.sub);
   const { pathname, search } = request.nextUrl;
 
-  if (!signedIn && !isPublic(pathname) && !pathname.startsWith("/api/")) {
+  if (!signedIn && !publicPaths.includes(pathname) && !pathname.startsWith("/api/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";
@@ -44,7 +40,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (signedIn && pathname === "/login") {
+  if (signedIn && pathname === "/login" && (await supabase.auth.getUser()).data.user) {
     const url = request.nextUrl.clone();
     url.pathname = "/overview";
     url.search = "";
