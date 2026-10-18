@@ -51,6 +51,20 @@ export function isOverdue(task: { status: TaskStatus; planned_end: string }, now
   return executionStatuses.includes(task.status) && new Date(task.planned_end).getTime() < now;
 }
 
+type PlannedTerms = {
+  planned_start: string;
+  planned_end: string;
+  planned_start_original: string;
+  planned_end_original: string;
+};
+
+export function isRescheduled(task: PlannedTerms) {
+  return (
+    new Date(task.planned_start).getTime() !== new Date(task.planned_start_original).getTime() ||
+    new Date(task.planned_end).getTime() !== new Date(task.planned_end_original).getTime()
+  );
+}
+
 export function taskCode(number: number) {
   return `MB-${number}`;
 }

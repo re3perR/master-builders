@@ -4,16 +4,9 @@ import type { ReactNode } from "react";
 import { ObstacleBadge, OverdueBadge, PriorityBadge, StatusBadge } from "@/components/app/task-badges";
 import type { Viewer } from "@/lib/auth";
 import { cn } from "@/lib/cn";
-import { isOverdue, taskCode } from "@/lib/labels";
+import { isOverdue, isRescheduled, taskCode } from "@/lib/labels";
 import { formatDateTime, formatDuration, formatInterval } from "@/lib/time";
 import type { TaskCard } from "../types";
-
-export function isRescheduled(card: TaskCard) {
-  return (
-    new Date(card.planned_start).getTime() !== new Date(card.planned_start_original).getTime() ||
-    new Date(card.planned_end).getTime() !== new Date(card.planned_end_original).getTime()
-  );
-}
 
 type MetaLineProps = { icon: ReactNode; label: string; linked?: boolean; children: ReactNode };
 
@@ -36,7 +29,7 @@ function deadlinePassed(card: TaskCard) {
 export function TaskHeader({ card, viewer }: { card: TaskCard; viewer: Viewer }) {
   const foreman = viewer.profile.role === "foreman";
   const overdue = isOverdue(card);
-  const pastDeadline = card.status === "InReview" && deadlinePassed(card);
+  const pastDeadline = card.status === "InReview" && (foreman || !card.pending_report) && deadlinePassed(card);
   const linkClass =
     "flex min-h-11 w-fit items-center font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink sm:inline sm:min-h-0";
   const separator = <span className="hidden sm:inline"> · </span>;

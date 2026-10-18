@@ -10,7 +10,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/cn";
-import { statusLabels, taskCode } from "@/lib/labels";
+import { isRescheduled, statusLabels, taskCode } from "@/lib/labels";
+import { countLabel } from "@/lib/plural";
 import type { Snapshot } from "@/lib/snapshot";
 import { dayKey, dayRange, formatShortDate, formatTime, shiftDay } from "@/lib/time";
 import { refreshTaskList } from "../actions";
@@ -18,14 +19,6 @@ import { buildTaskQuery, emptyFilters, hasActiveFilters, taskListHref, type Task
 import type { TaskFilterOptions, TaskListItem, TaskListPage } from "../types";
 import { TaskFilterPanel } from "./task-filter-panel";
 import { TaskSignals } from "./task-signals";
-
-function plural(count: number, forms: [string, string, string]) {
-  const tens = count % 100;
-  const units = count % 10;
-  if (units === 1 && tens !== 11) return forms[0];
-  if (units >= 2 && units <= 4 && (tens < 12 || tens > 14)) return forms[1];
-  return forms[2];
-}
 
 function dayLabel(key: string, today: string) {
   if (key === today) return "сегодня";
@@ -84,7 +77,7 @@ function filterChips(filters: TaskFilters, options: TaskFilterOptions, today: st
 }
 
 function TaskInterval({ item }: { item: TaskListItem }) {
-  const moved = item.planned_end !== item.planned_end_original;
+  const moved = isRescheduled(item);
   const sameDay = dayKey(item.planned_start) === dayKey(item.planned_end);
   return (
     <span className="flex flex-col">
@@ -239,7 +232,7 @@ export function TaskListView({ initial, filters, options, today, canCreate }: Ta
       <div className="mb-3 flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <p className="mr-1 font-medium" aria-live="polite">
-            Найдено {data.total} {plural(data.total, ["задание", "задания", "заданий"])}
+            Найдено {countLabel(data.total, ["задание", "задания", "заданий"])}
           </p>
           {chips.map((chip) => (
             <button
@@ -282,7 +275,7 @@ export function TaskListView({ initial, filters, options, today, canCreate }: Ta
           <EmptyState
             className="rounded-[var(--radius-card)] border border-line bg-surface"
             title={`На странице ${data.page} заданий нет`}
-            description={`Всего ${data.total} ${plural(data.total, ["задание", "задания", "заданий"])}, страниц: ${pages}.`}
+            description={`Всего ${countLabel(data.total, ["задание", "задания", "заданий"])}, страниц: ${pages}.`}
             action={
               <Link
                 href={taskListHref({ ...filters, page: pages })}

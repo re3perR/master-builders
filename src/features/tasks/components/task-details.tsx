@@ -2,10 +2,9 @@ import { History } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { priorityLabels, taskCode } from "@/lib/labels";
+import { isRescheduled, priorityLabels, taskCode } from "@/lib/labels";
 import { formatDateTime, formatInterval } from "@/lib/time";
 import type { TaskCard } from "../types";
-import { isRescheduled } from "./task-header";
 
 const linkClass =
   "inline-flex min-h-11 items-center font-medium underline decoration-line underline-offset-4 hover:decoration-ink sm:min-h-0";

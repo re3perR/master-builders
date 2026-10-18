@@ -35,6 +35,7 @@ export type TaskListItem = Pick<
   | "address_snapshot"
   | "planned_start"
   | "planned_end"
+  | "planned_start_original"
   | "planned_end_original"
   | "is_overdue"
   | "has_open_obstacle"
