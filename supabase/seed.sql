@@ -316,7 +316,7 @@ select pg_temp.add_task(11, 'north', 'school', 'petrov', 'Демонтаж ст�
   'normal', pg_temp.at(2, 10), pg_temp.at(2, 16), 'dispatcher.north');
 select pg_temp.add_task(12, 'north', 'warehouse', 'lebedev', 'Герметизация швов фасадных панелей',
   'Загерметизировать вертикальные швы фасадных панелей по оси А, около 40 погонных метров.',
-  'normal', pg_temp.at(1, 9), pg_temp.at(1, 17), 'dispatcher.north');
+  'normal', pg_temp.at(0, 9), pg_temp.at(0, 17), 'dispatcher.north');
 select pg_temp.add_task(13, 'north', 'warehouse', 'lebedev', 'Ночная замена светильников над стеллажами',
   'Заменить светильники над стеллажами зоны А в ночное окно, пока склад не работает.',
   'normal', pg_temp.at(0, 22), pg_temp.at(1, 2), 'dispatcher.north');
@@ -404,7 +404,6 @@ update public.tasks set source_task_id = pg_temp.sid('task:10') where id = pg_te
 
 select pg_temp.move(12, 'Accepted', 'foreman.lebedev', now() - interval '5 hours');
 update public.tasks set planned_start = pg_temp.at(1, 9), planned_end = pg_temp.at(1, 17),
-  planned_start_original = pg_temp.at(0, 9), planned_end_original = pg_temp.at(0, 17),
   terms_changed_at = now() - interval '4 hours', version = version + 1
 where id = pg_temp.sid('task:12');
 select pg_temp.event(12, 'dispatcher.north', 'rescheduled', jsonb_build_object(
@@ -426,8 +425,8 @@ select pg_temp.report(20, 1, 'foreman.gusev', 'Основание вывески
 
 select pg_temp.move(21, 'Accepted', 'foreman.gusev', pg_temp.at(-8, 16));
 select pg_temp.move(21, 'InProgress', 'foreman.gusev', pg_temp.at(-7, 9));
-select pg_temp.report(21, 1, 'foreman.gusev', 'Перегородка смонтирована, дверной блок установлен, швы зашпаклёваны.', 3, pg_temp.at(-5, 11));
-select pg_temp.decide(21, 1, 'dispatcher.south', 'accepted', null, pg_temp.at(-5, 16));
+select pg_temp.report(21, 1, 'foreman.gusev', 'Перегородка смонтирована, дверной блок установлен, швы зашпаклёваны.', 3, pg_temp.at(-6, 16));
+select pg_temp.decide(21, 1, 'dispatcher.south', 'accepted', null, pg_temp.at(-6, 17, 30));
 
 update public.tasks
 set status = 'Cancelled', cancelled_at = pg_temp.at(-2, 18), cancelled_by = pg_temp.sid('user:dispatcher.south'),
