@@ -1,16 +1,17 @@
 "use client";
 
 import { Tabs } from "radix-ui";
-import { useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { RefreshStatus } from "@/components/app/refresh-status";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Spinner } from "@/components/ui/spinner";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/cn";
 import type { Snapshot } from "@/lib/snapshot";
 import { loadMyTasks } from "./actions";
 import { MyTaskCard } from "./my-task-card";
-import { myViews, type MyTasks, type MyView } from "./types";
+import { doneLimitMax, donePageSize, myViews, type MyTasks, type MyView } from "./types";
 
 const viewLabels: Record<MyView, string> = {
   action: "Требуют действия",
@@ -21,8 +22,11 @@ const viewLabels: Record<MyView, string> = {
 };
 
 export function MyTasksBoard({ initial, initialView }: { initial: Snapshot<MyTasks>; initialView: MyView }) {
-  const { data, loadedAt, error, refreshing, refresh } = usePolling(loadMyTasks, initial);
+  const doneLimit = useRef(donePageSize);
+  const load = useCallback(() => loadMyTasks(doneLimit.current), []);
+  const { data, loadedAt, error, refreshing, refresh } = usePolling(load, initial);
   const [view, setView] = useState<MyView>(initialView);
+  const [loadingMore, setLoadingMore] = useState(false);
   const byId = new Map(data.tasks.map((task) => [task.id, task]));
 
   function select(next: string) {
@@ -31,6 +35,13 @@ export function MyTasksBoard({ initial, initialView }: { initial: Snapshot<MyTas
     const url = new URL(window.location.href);
     url.searchParams.set("view", value);
     window.history.replaceState(window.history.state, "", url);
+  }
+
+  async function showMoreDone() {
+    doneLimit.current = Math.min(data.views.done.length + donePageSize, doneLimitMax);
+    setLoadingMore(true);
+    await refresh();
+    setLoadingMore(false);
   }
 
   const empty: Record<MyView, { title: string; description: string; action?: ReactNode }> = {
@@ -121,9 +132,22 @@ export function MyTasksBoard({ initial, initialView }: { initial: Snapshot<MyTas
                 </div>
               )}
               {key === "done" && data.done_total > tasks.length ? (
-                <p className="mt-3 text-sm text-ink-muted">
-                  Показаны последние {tasks.length} из {data.done_total}.
-                </p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                  <p className="text-sm text-ink-muted">
+                    Показаны последние {tasks.length} из {data.done_total}.
+                  </p>
+                  {tasks.length < doneLimitMax ? (
+                    <Button
+                      variant="secondary"
+                      className="w-full sm:w-auto"
+                      disabled={refreshing}
+                      onClick={() => void showMoreDone()}
+                    >
+                      {loadingMore ? <Spinner label="Загружаем" /> : null}
+                      Показать ещё
+                    </Button>
+                  ) : null}
+                </div>
               ) : null}
             </Tabs.Content>
           );

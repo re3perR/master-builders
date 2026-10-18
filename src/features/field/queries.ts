@@ -3,14 +3,12 @@ import type { TaskReport, TaskStatus } from "@/lib/database.types";
 import { activeStatuses, executionStatuses, finalStatuses } from "@/lib/labels";
 import { createClient } from "@/lib/supabase/server";
 import { dayKey, dayRange } from "@/lib/time";
-import type { MyTask, MyTasks, MyView, Need } from "./types";
+import { donePageSize, type MyTask, type MyTasks, type MyView, type Need } from "./types";
 
 const columns =
   "id, number, title, status, priority, version, site_id, address_snapshot, planned_start, planned_end, completed_at, cancelled_at, cancel_reason";
 
-const doneLimit = 30;
-
-export async function getMyTasks(crewId: string): Promise<MyTasks> {
+export async function getMyTasks(crewId: string, doneLimit = donePageSize): Promise<MyTasks> {
   const supabase = await createClient();
   const now = new Date();
   const today = dayKey(now);

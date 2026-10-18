@@ -7,7 +7,7 @@ import { toAppError } from "@/lib/errors";
 import { callRpc, type ActionResult } from "@/lib/rpc";
 import { snapshot, type Snapshot } from "@/lib/snapshot";
 import { getMyTasks } from "./queries";
-import type { MyTasks } from "./types";
+import { doneLimitMax, donePageSize, type MyTasks } from "./types";
 
 const transition = z.object({
   taskId: z.guid(),
@@ -17,24 +17,28 @@ const transition = z.object({
 
 const obstacleInput = transition.extend({
   category: z.enum(["access", "materials", "equipment", "other"]),
-  reason: z.string().max(5000),
+  reason: z.string().trim().max(5000),
 });
 
 const closeInput = transition.extend({
-  comment: z.string().max(5000),
+  comment: z.string().trim().max(5000),
 });
+
+const doneLimitInput = z.number().int().min(donePageSize).max(doneLimitMax);
 
 const invalid: ActionResult<never> = {
   ok: false,
   error: { kind: "validation", message: "Проверьте введённые данные." },
 };
 
-export async function loadMyTasks(): Promise<ActionResult<Snapshot<MyTasks>>> {
+export async function loadMyTasks(doneLimit: number = donePageSize): Promise<ActionResult<Snapshot<MyTasks>>> {
+  const limit = doneLimitInput.safeParse(doneLimit);
+  if (!limit.success) return invalid;
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: toAppError({ code: "MB401" }) };
   if (viewer.profile.role !== "foreman" || !viewer.crew) return { ok: false, error: toAppError({ code: "MB403" }) };
   try {
-    return { ok: true, data: snapshot(await getMyTasks(viewer.crew.id)) };
+    return { ok: true, data: snapshot(await getMyTasks(viewer.crew.id, limit.data)) };
   } catch {
     return { ok: false, error: toAppError(null) };
   }

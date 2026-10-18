@@ -2,6 +2,9 @@ import type { ObstacleCategory, TaskPriority, TaskStatus } from "@/lib/database.
 
 export const myViews = ["action", "today", "upcoming", "review", "done"] as const;
 
+export const donePageSize = 30;
+export const doneLimitMax = 1000;
+
 export type MyView = (typeof myViews)[number];
 
 export type Need = "accept" | "start" | "rework" | "obstacle" | "overdue";
