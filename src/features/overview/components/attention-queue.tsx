@@ -81,7 +81,6 @@ function Row({ href, task, aside, children }: RowProps) {
 }
 
 type AttentionQueueProps = {
-  title: string;
   columns?: boolean;
   queue: Queue;
   counters: DivisionCounters;
@@ -89,13 +88,13 @@ type AttentionQueueProps = {
   className?: string;
 };
 
-export function AttentionQueue({ title, columns = false, queue, counters, now, className }: AttentionQueueProps) {
+export function AttentionQueue({ columns = false, queue, counters, now, className }: AttentionQueueProps) {
   const at = new Date(now);
 
   return (
     <Card className={className}>
       <CardHeader className="flex-col gap-0.5">
-        <CardTitle>{title}</CardTitle>
+        <CardTitle>Требуют внимания</CardTitle>
         <p className="text-sm text-ink-muted">Одно задание может попасть сразу в несколько разделов.</p>
       </CardHeader>
       <div className={cn(columns && "lg:grid lg:grid-cols-3")}>
@@ -155,7 +154,7 @@ export function AttentionQueue({ title, columns = false, queue, counters, now, c
             <Row key={task.id} href={taskLink(task.id, "reports")} task={task}>
               <span className="font-medium text-status-review">Ждёт {formatDuration(task.submitted_at, at)}</span>
               <span className="tabular text-ink-muted">
-                отчёт v{task.report_version} отправлен {formatMoment(task.submitted_at, now)}
+                отчёт, версия {task.report_version}, отправлен {formatMoment(task.submitted_at, now)}
               </span>
               {Date.parse(task.planned_end) < now ? (
                 <span className="tabular w-full text-ink-muted">

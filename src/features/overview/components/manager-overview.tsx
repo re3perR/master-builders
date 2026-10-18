@@ -38,14 +38,7 @@ export function ManagerOverview({ divisionName, initial }: ManagerOverviewProps)
         <StatusDistribution counters={data.counters} />
         <OnTimeCard metrics={data.metrics} period={data.period} />
       </div>
-      <AttentionQueue
-        title="Требуют внимания"
-        columns
-        queue={data.attention}
-        counters={data.counters}
-        now={now}
-        className="mt-6"
-      />
+      <AttentionQueue columns queue={data.attention} counters={data.counters} now={now} className="mt-6" />
     </>
   );
 }

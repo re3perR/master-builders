@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, TimerOff } from "lucide-react";
+import { CheckCircle2, ChevronLeft, TimerOff } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
 import { PageHeader } from "@/components/app/page-header";
@@ -171,7 +171,11 @@ export function AcceptedReportView({ divisionName, initial }: AcceptedReportView
 
   return (
     <>
-      <Link href={`/overview?days=${days}`} className="text-sm text-ink-muted hover:underline">
+      <Link
+        href={`/overview?days=${days}`}
+        className="-ml-1 inline-flex min-h-11 items-center gap-0.5 rounded px-1 text-sm text-ink-muted hover:text-ink hover:underline sm:min-h-8"
+      >
+        <ChevronLeft aria-hidden className="size-4" />
         Обзор
       </Link>
       <PageHeader

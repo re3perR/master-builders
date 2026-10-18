@@ -44,13 +44,7 @@ export function DispatcherOverview({ divisionName, initial }: DispatcherOverview
       />
       <CounterTiles counters={data.counters} />
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-5">
-        <AttentionQueue
-          title="Очередь внимания"
-          queue={data.attention}
-          counters={data.counters}
-          now={now}
-          className="lg:col-span-3"
-        />
+        <AttentionQueue queue={data.attention} counters={data.counters} now={now} className="lg:col-span-3" />
         <UpcomingWorks tasks={data.upcoming} today={data.today} now={now} className="lg:col-span-2" />
       </div>
     </>
