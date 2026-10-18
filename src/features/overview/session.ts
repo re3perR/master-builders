@@ -9,9 +9,9 @@ export async function sessionRole(
 ): Promise<{ ok: true; role: UserRole } | { ok: false; error: AppError }> {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.getClaims();
+    const { data, error } = await supabase.auth.getUser();
     if (error && isAuthRetryableFetchError(error)) return { ok: false, error: toAppError(null) };
-    const userId = data?.claims?.sub;
+    const userId = data.user?.id;
     if (!userId) return { ok: false, error: toAppError({ code: "MB401" }) };
 
     const { data: profile, error: profileError } = await supabase
