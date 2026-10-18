@@ -10,7 +10,7 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/
 import { describedBy, Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useClientKey } from "@/hooks/use-client-key";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
 import { updateCrew } from "../actions";
 import { memberLimit, type CrewCard } from "../types";
 import { validateCrewName, validateMember, validateMemberCount } from "../validation";
@@ -171,7 +171,7 @@ function CrewForm({ crew, members, onSaved }: CrewFormProps) {
       onSaved(result.data.changed);
       router.refresh();
     } catch {
-      setFormError("Нет связи с сервером. Введённые данные сохранены в форме, попробуйте ещё раз.");
+      setFormError(connectionLost.message);
     } finally {
       setPending(false);
     }

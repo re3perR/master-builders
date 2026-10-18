@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
 
 type ConfirmDialogProps = {
   trigger: ReactNode;
@@ -43,7 +43,7 @@ export function ConfirmDialog({
       if (failure) setError(failure.message);
       else setOpen(false);
     } catch {
-      setError("Нет связи с сервером. Ничего не изменилось, попробуйте ещё раз.");
+      setError(connectionLost.message);
     } finally {
       setPending(false);
     }

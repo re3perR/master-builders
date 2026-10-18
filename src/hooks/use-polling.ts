@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
 import type { Snapshot } from "@/lib/snapshot";
 
 type LoaderResult<T> = { ok: true; data: Snapshot<T> } | { ok: false; error: AppError };
@@ -48,7 +48,7 @@ export function usePolling<T>(loader: () => Promise<LoaderResult<T>>, initial: S
       setState((current) => ({
         ...current,
         refreshing: false,
-        error: { kind: "temporary", message: "Нет связи с сервером." },
+        error: connectionLost,
       }));
     } finally {
       inFlight.current = false;

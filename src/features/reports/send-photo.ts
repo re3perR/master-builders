@@ -1,6 +1,6 @@
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
 
-export type UploadedPhoto = {
+type UploadedPhoto = {
   id: string;
   mimeType: string;
   width: number;
@@ -8,7 +8,7 @@ export type UploadedPhoto = {
   size: number;
 };
 
-export type UploadOutcome =
+type UploadOutcome =
   { ok: true; upload: UploadedPhoto } | { ok: false; message: string; retryable: boolean; aborted?: boolean };
 
 export function sendPhoto(taskId: string, file: File, onProgress: (share: number) => void) {
@@ -29,8 +29,7 @@ export function sendPhoto(taskId: string, file: File, onProgress: (share: number
         retryable: request.status >= 500 || request.status === 429,
       });
     };
-    request.onerror = () =>
-      resolve({ ok: false, message: "Нет связи с сервером. Повторите загрузку.", retryable: true });
+    request.onerror = () => resolve({ ok: false, message: connectionLost.message, retryable: true });
     request.ontimeout = () =>
       resolve({ ok: false, message: "Загрузка заняла слишком много времени. Повторите попытку.", retryable: true });
     request.onabort = () => resolve({ ok: false, message: "Загрузка отменена.", retryable: true, aborted: true });
