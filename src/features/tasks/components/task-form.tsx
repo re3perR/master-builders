@@ -12,8 +12,9 @@ import type { OverlapItem } from "@/lib/database.types";
 import { connectionLost, type AppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
 import { createTask } from "../actions";
+import { limits } from "../limits";
 import type { CrewChoice, SaveResult, SiteChoice } from "../types";
-import { checkTaskDraft, type FieldErrors, type TaskDraftInput } from "../validation";
+import { checkTaskDraft, lengthHint, type FieldErrors, type TaskDraftInput } from "../validation";
 import { OverlapNotice } from "./overlap-notice";
 import { PriorityField } from "./priority-field";
 
@@ -111,7 +112,7 @@ export function TaskForm({ defaults, sites, crews, sourceTaskId, cancelHref, tim
         label="Название"
         required
         error={errors.title}
-        hint={`${values.title.trim().length} из 160 символов, минимум 3`}
+        hint={lengthHint(values.title, limits.title)}
       >
         <Input
           id="task-title"
@@ -128,7 +129,7 @@ export function TaskForm({ defaults, sites, crews, sourceTaskId, cancelHref, tim
         label="Описание работ"
         required
         error={errors.description}
-        hint={`${values.description.trim().length} из 5000 символов, минимум 10`}
+        hint={lengthHint(values.description, limits.description)}
       >
         <Textarea
           id="task-description"

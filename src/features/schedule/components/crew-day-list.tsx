@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ScheduleTask } from "@/features/overview/db-types";
-import { plural } from "@/features/overview/format";
 import { newTaskLink, taskLink } from "@/features/overview/links";
 import { cn } from "@/lib/cn";
 import { isOverdue, taskCode } from "@/lib/labels";
+import { countLabel } from "@/lib/plural";
 import { intervalText } from "../interval";
 import type { CrewDay } from "../types";
 import { DayInterval } from "./day-interval";
@@ -40,11 +40,7 @@ export function CrewDayList({ group, date, today, now, canCreate }: CrewDayListP
         <div className="min-w-0">
           <h2 className="font-semibold">{crew.name}</h2>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted">
-            <span>
-              {tasks.length
-                ? `${tasks.length} ${plural(tasks.length, "задание", "задания", "заданий")}`
-                : "Нет заданий"}
-            </span>
+            <span>{tasks.length ? countLabel(tasks.length, ["задание", "задания", "заданий"]) : "Нет заданий"}</span>
             {crew.archived ? <Badge>В архиве</Badge> : null}
             {conflicts ? (
               <Badge tone="warning">

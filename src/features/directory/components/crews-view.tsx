@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { usePolling } from "@/hooks/use-polling";
+import { countLabel } from "@/lib/plural";
 import type { Snapshot } from "@/lib/snapshot";
 import { loadCrews } from "../actions";
 import { divisionWithoutCrews } from "../crew-notices";
 import type { CrewSummary } from "../db-types";
-import { plural } from "../plural";
 import type { CrewList } from "../types";
 
 export function CrewsView({ initial }: { initial: Snapshot<CrewList> }) {
@@ -21,7 +21,7 @@ export function CrewsView({ initial }: { initial: Snapshot<CrewList> }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-        <p className="text-sm text-ink-muted">{plural(crews.length, "бригада", "бригады", "бригад")}</p>
+        <p className="text-sm text-ink-muted">{countLabel(crews.length, ["бригада", "бригады", "бригад"])}</p>
         <RefreshStatus loadedAt={loadedAt} error={error} refreshing={refreshing} onRefresh={refresh} />
       </div>
       {crews.length ? (
@@ -68,7 +68,7 @@ function CrewTile({ crew }: { crew: CrewSummary }) {
       </div>
       <p className="mt-1 text-sm text-ink-muted">Бригадир: {crew.foreman_name ?? "не назначен"}</p>
       <p className="text-sm text-ink-muted">
-        Состав: {crew.members ? plural(crew.members, "человек", "человека", "человек") : "не указан"}
+        Состав: {crew.members ? countLabel(crew.members, ["человек", "человека", "человек"]) : "не указан"}
       </p>
       <dl className="mt-4 grid grid-cols-2 gap-x-2 gap-y-3 border-t border-line pt-3 @min-[19rem]:grid-cols-4">
         {counts.map((item) => (

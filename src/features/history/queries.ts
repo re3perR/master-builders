@@ -2,12 +2,11 @@ import "server-only";
 import { toAppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
 import { createClient } from "@/lib/supabase/server";
+import { isGuid } from "@/lib/validation";
 import type { HistoryEvent } from "./types";
 
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export async function getHistory(taskId: string): Promise<ActionResult<HistoryEvent[]>> {
-  if (!uuidPattern.test(taskId)) return { ok: false, error: toAppError({ code: "MB404" }) };
+  if (!isGuid(taskId)) return { ok: false, error: toAppError({ code: "MB404" }) };
   const supabase = await createClient();
 
   const [task, events] = await Promise.all([

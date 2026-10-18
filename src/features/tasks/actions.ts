@@ -5,7 +5,8 @@ import { getViewer } from "@/lib/auth";
 import type { AppError } from "@/lib/errors";
 import { callRpc, type ActionResult } from "@/lib/rpc";
 import { snapshot, type Snapshot } from "@/lib/snapshot";
-import { isGuid, parseTaskFilters } from "./filters";
+import { isGuid } from "@/lib/validation";
+import { parseTaskFilters } from "./filters";
 import { getTaskList } from "./queries";
 import type { SaveResult, TaskListPage } from "./types";
 import {

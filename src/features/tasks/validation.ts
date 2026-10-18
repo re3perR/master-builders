@@ -1,18 +1,36 @@
 import { z } from "zod";
 import type { TaskPriority } from "@/lib/database.types";
 import { fromLocalInput } from "@/lib/time";
+import { textLength } from "@/lib/validation";
+import { limits } from "./limits";
 
 export type FieldErrors = Partial<Record<string, string>>;
 
-export type Checked<T> = { ok: true; data: T } | { ok: false; errors: FieldErrors };
+type Checked<T> = { ok: true; data: T } | { ok: false; errors: FieldErrors };
 
-function text(min: number, max: number, message: string) {
-  return z.string(message).trim().min(min, message).max(max, message);
+type Limit = { min: number; max: number };
+
+function text({ min, max }: Limit, message: string) {
+  return z
+    .string(message)
+    .trim()
+    .refine((value) => {
+      const length = textLength(value);
+      return length >= min && length <= max;
+    }, message);
 }
 
-const title = text(3, 160, "Название: от 3 до 160 символов.");
-const description = text(10, 5000, "Описание: от 10 до 5000 символов.");
-const reason = text(3, 1000, "Укажите причину: от 3 до 1000 символов.");
+export function lengthHint(value: string, { min, max }: Limit) {
+  return `${textLength(value)} из ${max} символов, минимум ${min}`;
+}
+
+const title = text(limits.title, `Название: от ${limits.title.min} до ${limits.title.max} символов.`);
+const description = text(
+  limits.description,
+  `Описание: от ${limits.description.min} до ${limits.description.max} символов.`,
+);
+const reason = text(limits.reason, `Укажите причину: от ${limits.reason.min} до ${limits.reason.max} символов.`);
+const accessNoteMessage = `Инструкция по доступу: не больше ${limits.accessNote.max} символов.`;
 const priority = z.enum(["low", "normal", "high"], "Выберите приоритет.");
 
 const draftSchema = z.object({
@@ -27,11 +45,11 @@ const detailsSchema = z.object({
   title,
   description,
   priority,
-  address_snapshot: text(5, 300, "Адрес: от 5 до 300 символов."),
+  address_snapshot: text(limits.address, `Адрес: от ${limits.address.min} до ${limits.address.max} символов.`),
   access_note_snapshot: z
-    .string("Инструкция по доступу: не больше 2000 символов.")
+    .string(accessNoteMessage)
     .trim()
-    .max(2000, "Инструкция по доступу: не больше 2000 символов."),
+    .refine((value) => textLength(value) <= limits.accessNote.max, accessNoteMessage),
 });
 
 const reasonSchema = z.object({ reason });

@@ -3,12 +3,12 @@ import { toAppError, type AppError } from "@/lib/errors";
 import { activeStatuses, finalStatuses, isOverdue } from "@/lib/labels";
 import { callRpc, type ActionResult } from "@/lib/rpc";
 import { createClient } from "@/lib/supabase/server";
+import { isGuid } from "@/lib/validation";
 import type { CrewCard, CrewList, SiteCard, SiteFilters, SiteList, TaskGroups, TaskItem } from "./types";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 type Failure = { ok: false; error: AppError };
 
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const taskColumns = "id, number, title, status, priority, planned_start, planned_end, site_id, crew_id";
 const activeLimit = 100;
 const closedLimit = 10;
@@ -102,7 +102,7 @@ export async function listSites(filters: SiteFilters): Promise<ActionResult<Site
 }
 
 export async function getSiteCard(id: string): Promise<ActionResult<SiteCard>> {
-  if (!uuidPattern.test(id)) return missing();
+  if (!isGuid(id)) return missing();
   const supabase = await createClient();
   const [site, tasks] = await Promise.all([
     supabase.from("sites").select("*").eq("id", id).maybeSingle(),
@@ -120,7 +120,7 @@ export async function listCrews(): Promise<ActionResult<CrewList>> {
 }
 
 export async function getCrewCard(id: string): Promise<ActionResult<CrewCard>> {
-  if (!uuidPattern.test(id)) return missing();
+  if (!isGuid(id)) return missing();
   const supabase = await createClient();
   const [crew, members, tasks] = await Promise.all([
     supabase.from("crews").select("id, name, foreman_id, archived_at, updated_at").eq("id", id).maybeSingle(),

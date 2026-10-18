@@ -12,11 +12,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { usePolling } from "@/hooks/use-polling";
+import { countLabel } from "@/lib/plural";
 import type { Snapshot } from "@/lib/snapshot";
 import { loadSites } from "../actions";
 import type { SiteSummary } from "../db-types";
 import { sitesHref } from "../filters";
-import { plural } from "../plural";
 import type { SiteFilters, SiteList } from "../types";
 import { SiteFormDialog } from "./site-form-dialog";
 
@@ -108,7 +108,7 @@ export function SitesView({ initial, filters, canManage }: SitesViewProps) {
         <>
           <p className="text-sm text-ink-muted" aria-live="polite">
             {searching ? "Найдено: " : null}
-            {plural(sites.length, "объект", "объекта", "объектов")}
+            {countLabel(sites.length, ["объект", "объекта", "объектов"])}
             {shownArchived ? `, из них в архиве — ${shownArchived}` : null}
             {!filters.archived && !searching && archivedCount ? ` · ещё ${archivedCount} в архиве` : null}
           </p>

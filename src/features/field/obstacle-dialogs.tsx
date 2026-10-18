@@ -11,6 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { ObstacleCategory } from "@/lib/database.types";
 import type { AppError } from "@/lib/errors";
 import { obstacleLabels } from "@/lib/labels";
+import { textLength } from "@/lib/validation";
 import { closeObstacle, openObstacle } from "./actions";
 import { useTaskAction } from "./use-task-action";
 
@@ -25,7 +26,7 @@ function generalError(error: AppError | null, fields: string[]) {
 }
 
 function lengthOk(value: string) {
-  const length = value.trim().length;
+  const length = textLength(value);
   return length >= 3 && length <= 2000;
 }
 

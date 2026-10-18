@@ -6,8 +6,7 @@ import type { AppError, ErrorKind } from "@/lib/errors";
 import { callRpc } from "@/lib/rpc";
 import { storeTaskPhoto } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { isGuid } from "@/lib/validation";
 
 const statusByKind: Record<ErrorKind, number> = {
   auth: 401,
@@ -80,7 +79,7 @@ export async function POST(request: NextRequest, context: RouteContext<"/api/tas
   if (viewer.profile.role !== "foreman") {
     return failure({ kind: "forbidden", message: "Фото к отчёту загружает бригадир задания." });
   }
-  if (!uuidPattern.test(id)) {
+  if (!isGuid(id)) {
     return failure({ kind: "not_found", message: "Задание не найдено или у вас нет к нему доступа." });
   }
   if (Number(request.headers.get("content-length") ?? 0) > maxPhotoBytes) return tooLarge();

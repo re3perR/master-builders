@@ -10,10 +10,11 @@ import { describedBy, Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
 import { useClientKey } from "@/hooks/use-client-key";
 import type { Site } from "@/lib/database.types";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
+import { textLength } from "@/lib/validation";
 import { createSite, updateSite } from "../actions";
 import { limits } from "../types";
-import { textLength, validateSite, type SiteErrors, type SiteValues } from "../validation";
+import { validateSite, type SiteErrors, type SiteValues } from "../validation";
 
 type EditableSite = Pick<Site, "id" | "name" | "address" | "access_note" | "contact" | "updated_at">;
 
@@ -150,7 +151,7 @@ function SiteForm({ site, onSaved }: { site?: EditableSite; onSaved: (changed: b
         startNavigation(() => router.push(`/sites/${result.data.siteId}`));
       }
     } catch {
-      setFormError("Нет связи с сервером. Введённые данные сохранены в форме, попробуйте ещё раз.");
+      setFormError(connectionLost.message);
     } finally {
       setPending(false);
     }

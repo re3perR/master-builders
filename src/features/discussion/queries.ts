@@ -2,12 +2,11 @@ import "server-only";
 import { toAppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
 import { createClient } from "@/lib/supabase/server";
+import { isGuid } from "@/lib/validation";
 import type { Discussion } from "./types";
 
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export async function getDiscussion(taskId: string): Promise<ActionResult<Discussion>> {
-  if (!uuidPattern.test(taskId)) return { ok: false, error: toAppError({ code: "MB404" }) };
+  if (!isGuid(taskId)) return { ok: false, error: toAppError({ code: "MB404" }) };
   const supabase = await createClient();
 
   const [task, messages] = await Promise.all([

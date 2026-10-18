@@ -4,11 +4,11 @@ import Link from "next/link";
 import { PageHeader } from "@/components/app/page-header";
 import { Alert } from "@/components/ui/alert";
 import { TaskForm } from "@/features/tasks/components/task-form";
-import { isGuid } from "@/features/tasks/filters";
 import { getSourceTask, getTaskChoices } from "@/features/tasks/queries";
 import { requireViewer } from "@/lib/auth";
 import { taskCode } from "@/lib/labels";
 import { isDayKey, timeZoneLabel } from "@/lib/time";
+import { isGuid } from "@/lib/validation";
 
 export const metadata: Metadata = { title: "Новое задание" };
 

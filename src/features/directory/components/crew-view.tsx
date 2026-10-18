@@ -10,9 +10,9 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { usePolling } from "@/hooks/use-polling";
 import type { UserRole } from "@/lib/database.types";
+import { countLabel } from "@/lib/plural";
 import type { Snapshot } from "@/lib/snapshot";
 import { loadCrewCard } from "../actions";
-import { plural } from "../plural";
 import type { CrewCard } from "../types";
 import { CrewFormDialog } from "./crew-form-dialog";
 import { TaskList, TaskSection } from "./task-list";
@@ -51,7 +51,7 @@ export function CrewView({ initial, role }: { initial: Snapshot<CrewCard>; role:
           </div>
           <p className="mt-1 text-ink-muted">
             Бригадир: {foremanName ?? "не назначен"} ·{" "}
-            {members.length ? plural(members.length, "человек", "человека", "человек") : "состав не указан"}
+            {members.length ? countLabel(members.length, ["человек", "человека", "человек"]) : "состав не указан"}
           </p>
         </div>
         <div className="flex flex-col items-start gap-1 sm:items-end">

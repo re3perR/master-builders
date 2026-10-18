@@ -8,9 +8,9 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { useClientKey } from "@/hooks/use-client-key";
 import type { Site } from "@/lib/database.types";
 import type { AppError } from "@/lib/errors";
+import { countLabel } from "@/lib/plural";
 import { formatDate } from "@/lib/time";
 import { archiveSite, deleteSite, restoreSite } from "../actions";
-import { plural } from "../plural";
 import { ConfirmDialog } from "./confirm-dialog";
 
 type SiteManageProps = {
@@ -86,7 +86,7 @@ export function SiteManage({ site, activeCount, totalCount, onDone }: SiteManage
           <section className="flex flex-col items-start gap-3">
             <p id="site-archive-blocked">
               Архивировать нельзя: на объекте{" "}
-              {plural(activeCount, "активное задание", "активных задания", "активных заданий")}, включая ожидающие
+              {countLabel(activeCount, ["активное задание", "активных задания", "активных заданий"])}, включая ожидающие
               проверки. Архив станет доступен, когда все задания будут завершены или отменены.
             </p>
             <Button variant="secondary" disabled aria-describedby="site-archive-blocked">
@@ -119,7 +119,7 @@ export function SiteManage({ site, activeCount, totalCount, onDone }: SiteManage
         <section className="flex flex-col items-start gap-3 border-t border-line pt-4">
           {totalCount > 0 ? (
             <p className="text-ink-muted">
-              Удалить нельзя: объект использовался в {plural(totalCount, "задании", "заданиях", "заданиях")}.
+              Удалить нельзя: объект использовался в {countLabel(totalCount, ["задании", "заданиях", "заданиях"])}.
               {site.archived_at ? null : " Чтобы убрать его из выбора, архивируйте объект."}
             </p>
           ) : (

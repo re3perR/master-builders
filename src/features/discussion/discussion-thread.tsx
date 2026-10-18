@@ -18,6 +18,7 @@ import type { AppError } from "@/lib/errors";
 import { roleLabels } from "@/lib/labels";
 import type { Snapshot } from "@/lib/snapshot";
 import { formatDateTime, timeZoneLabel } from "@/lib/time";
+import { textLength } from "@/lib/validation";
 import { loadDiscussion, postMessage } from "./actions";
 import { messageLimit, type Discussion, type Message } from "./types";
 
@@ -38,10 +39,6 @@ function closedReason(role: UserRole, status: TaskStatus) {
     return "Руководитель читает обсуждение, но не пишет в нём. Сообщения отправляют диспетчер и бригадир назначенной бригады.";
   }
   return null;
-}
-
-function textLength(value: string) {
-  return Array.from(value.trim()).length;
 }
 
 export function DiscussionThread({ taskId, initial, author }: DiscussionThreadProps) {

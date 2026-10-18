@@ -1,3 +1,4 @@
+import { textLength } from "@/lib/validation";
 import { limits, memberLimit } from "./types";
 
 export type SiteValues = {
@@ -8,10 +9,6 @@ export type SiteValues = {
 };
 
 export type SiteErrors = Partial<Record<keyof SiteValues, string>>;
-
-export function textLength(value: string) {
-  return Array.from(value.trim()).length;
-}
 
 export function validateSite(values: SiteValues): SiteErrors {
   const errors: SiteErrors = {};

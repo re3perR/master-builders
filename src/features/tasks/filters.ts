@@ -1,6 +1,7 @@
 import type { TaskStatus } from "@/lib/database.types";
 import { statusOrder } from "@/lib/labels";
 import { dayRange, inZone, isDayKey, shiftDay } from "@/lib/time";
+import { isGuid } from "@/lib/validation";
 
 export const PAGE_SIZE = 25;
 
@@ -18,7 +19,7 @@ export type TaskFilters = {
   page: number;
 };
 
-export type SearchParamsInput = URLSearchParams | Record<string, string | string[] | undefined>;
+type SearchParamsInput = URLSearchParams | Record<string, string | string[] | undefined>;
 
 export const emptyFilters: TaskFilters = {
   q: "",
@@ -33,12 +34,6 @@ export const emptyFilters: TaskFilters = {
   review: false,
   page: 1,
 };
-
-const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-export function isGuid(value: unknown): value is string {
-  return typeof value === "string" && guidPattern.test(value);
-}
 
 function read(params: SearchParamsInput, key: string) {
   const value = params instanceof URLSearchParams ? params.get(key) : params[key];
@@ -109,7 +104,7 @@ export function hasActiveFilters(filters: TaskFilters) {
   );
 }
 
-export type ParsedSearch = { number: number | null; numberOnly: boolean; text: string };
+type ParsedSearch = { number: number | null; numberOnly: boolean; text: string };
 
 export function parseSearch(query: string): ParsedSearch {
   const value = query.trim();

@@ -9,6 +9,7 @@ import { describedBy, Field } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useTaskAction } from "@/features/field/use-task-action";
+import { textLength } from "@/lib/validation";
 import { approveReport, returnReport } from "./actions";
 import { noteMax, noteMin } from "./limits";
 
@@ -72,7 +73,7 @@ export function ReturnReportDialog({ taskId, version, reportId, reportVersion }:
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const length = note.trim().length;
+    const length = textLength(note);
     if (length < noteMin || length > noteMax) {
       setProblem(`Напишите замечание: от ${noteMin} до ${noteMax} символов.`);
       return;

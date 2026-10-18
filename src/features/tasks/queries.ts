@@ -4,13 +4,14 @@ import { toAppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
 import { createClient } from "@/lib/supabase/server";
 import { dayRange } from "@/lib/time";
-import { isGuid, PAGE_SIZE, parseSearch, searchPattern, type TaskFilters } from "./filters";
+import { isGuid } from "@/lib/validation";
+import { PAGE_SIZE, parseSearch, searchPattern, type TaskFilters } from "./filters";
 import type { CrewChoice, SiteChoice, TaskCard, TaskFilterOptions, TaskListPage } from "./types";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 const listColumns =
-  "id, number, title, site_id, site_name, crew_id, crew_name, priority, status, address_snapshot, planned_start, planned_end, planned_end_original, is_overdue, has_open_obstacle, obstacle_category, obstacle_reason, obstacle_opened_at, pending_submitted_at";
+  "id, number, title, site_id, site_name, crew_id, crew_name, priority, status, address_snapshot, planned_start, planned_end, planned_start_original, planned_end_original, is_overdue, has_open_obstacle, obstacle_category, obstacle_reason, obstacle_opened_at, pending_submitted_at";
 
 function quoted(value: string) {
   return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
