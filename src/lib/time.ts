@@ -18,7 +18,9 @@ export function formatDate(value: string | Date) {
 }
 
 export function formatShortDate(value: string | Date) {
-  return format(inZone(value), "d MMM", { locale: ru });
+  const date = inZone(value);
+  const thisYear = date.getFullYear() === nowInZone().getFullYear();
+  return format(date, thisYear ? "d MMM" : "d MMM yyyy", { locale: ru });
 }
 
 export function formatTime(value: string | Date) {

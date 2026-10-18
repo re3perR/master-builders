@@ -27,7 +27,7 @@ export function DialogContent({ title, description, children, className }: Dialo
         )}
       >
         <div className="mb-3 flex items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0 flex-1">
             <DialogPrimitive.Title className="text-lg font-semibold">{title}</DialogPrimitive.Title>
             {description ? (
               <DialogPrimitive.Description className="mt-1 text-sm text-ink-muted">
@@ -37,7 +37,7 @@ export function DialogContent({ title, description, children, className }: Dialo
               <DialogPrimitive.Description className="sr-only">{title}</DialogPrimitive.Description>
             )}
           </div>
-          <DialogPrimitive.Close className="-mr-2 -mt-1 inline-flex size-11 items-center justify-center rounded-lg text-ink-muted hover:bg-canvas sm:size-9">
+          <DialogPrimitive.Close className="-mr-2 -mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-canvas sm:size-9">
             <X aria-hidden className="size-5" />
             <span className="sr-only">Закрыть</span>
           </DialogPrimitive.Close>

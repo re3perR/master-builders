@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ObstacleBadge, OverdueBadge, PriorityBadge, StatusBadge } from "@/components/app/task-badges";
 import type { Viewer } from "@/lib/auth";
+import { cn } from "@/lib/cn";
 import { isOverdue, taskCode } from "@/lib/labels";
 import { formatDateTime, formatDuration, formatInterval } from "@/lib/time";
 import type { TaskCard } from "../types";
@@ -14,10 +15,12 @@ export function isRescheduled(card: TaskCard) {
   );
 }
 
-function MetaLine({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
+type MetaLineProps = { icon: ReactNode; label: string; linked?: boolean; children: ReactNode };
+
+function MetaLine({ icon, label, linked, children }: MetaLineProps) {
   return (
     <li className="flex gap-2">
-      <span aria-hidden className="mt-1 shrink-0 text-ink-muted">
+      <span aria-hidden className={cn("mt-1 shrink-0 text-ink-muted", linked && "mt-3.5 sm:mt-1")}>
         {icon}
       </span>
       <span className="sr-only">{label}: </span>
@@ -34,7 +37,9 @@ export function TaskHeader({ card, viewer }: { card: TaskCard; viewer: Viewer })
   const foreman = viewer.profile.role === "foreman";
   const overdue = isOverdue(card);
   const pastDeadline = card.status === "InReview" && deadlinePassed(card);
-  const linkClass = "font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink";
+  const linkClass =
+    "flex min-h-11 w-fit items-center font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink sm:inline sm:min-h-0";
+  const separator = <span className="hidden sm:inline"> · </span>;
 
   return (
     <div className="mb-4">
@@ -55,18 +60,23 @@ export function TaskHeader({ card, viewer }: { card: TaskCard; viewer: Viewer })
       <h1 className="mt-2 text-2xl font-semibold tracking-tight break-words">{card.title}</h1>
 
       <ul className="mt-3 flex flex-col gap-1.5 text-ink-muted">
-        <MetaLine icon={<MapPin className="size-4" />} label="Объект">
+        <MetaLine icon={<MapPin className="size-4" />} label="Объект" linked>
           <Link href={`/sites/${card.site.id}`} className={linkClass}>
             {card.site.name}
           </Link>
-          {" · "}
+          {separator}
           {card.address_snapshot}
         </MetaLine>
-        <MetaLine icon={<Users className="size-4" />} label="Бригада">
+        <MetaLine icon={<Users className="size-4" />} label="Бригада" linked>
           <Link href={`/crews/${card.crew.id}`} className={linkClass}>
             {card.crew.name}
           </Link>
-          {card.crew.foreman_name ? ` · бригадир ${card.crew.foreman_name}` : null}
+          {card.crew.foreman_name ? (
+            <>
+              {separator}
+              бригадир {card.crew.foreman_name}
+            </>
+          ) : null}
         </MetaLine>
         <MetaLine icon={<CalendarClock className="size-4" />} label="Плановые сроки">
           <span className="tabular text-ink">{formatInterval(card.planned_start, card.planned_end)}</span>
@@ -86,7 +96,11 @@ export function TaskHeader({ card, viewer }: { card: TaskCard; viewer: Viewer })
         {card.terms_changed_at ? (
           <MetaLine icon={<FilePenLine className="size-4" />} label="Изменения">
             Условия изменены после принятия, {formatDateTime(card.terms_changed_at)} ·{" "}
-            <Link href={`/tasks/${card.id}?tab=history`} scroll={false} className={linkClass}>
+            <Link
+              href={`/tasks/${card.id}?tab=history`}
+              scroll={false}
+              className="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+            >
               история
             </Link>
           </MetaLine>

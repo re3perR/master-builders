@@ -12,7 +12,7 @@ import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/cn";
 import { statusLabels, taskCode } from "@/lib/labels";
 import type { Snapshot } from "@/lib/snapshot";
-import { dayKey, dayRange, formatInterval, formatShortDate, formatTime, shiftDay } from "@/lib/time";
+import { dayKey, dayRange, formatShortDate, formatTime, shiftDay } from "@/lib/time";
 import { refreshTaskList } from "../actions";
 import { buildTaskQuery, emptyFilters, hasActiveFilters, taskListHref, type TaskFilters } from "../filters";
 import type { TaskFilterOptions, TaskListItem, TaskListPage } from "../types";
@@ -89,7 +89,12 @@ function TaskInterval({ item }: { item: TaskListItem }) {
   return (
     <span className="flex flex-col">
       {sameDay ? (
-        <span className="tabular">{formatInterval(item.planned_start, item.planned_end)}</span>
+        <span className="tabular">
+          {formatShortDate(item.planned_start)},{" "}
+          <span className="whitespace-nowrap">
+            {formatTime(item.planned_start)}–{formatTime(item.planned_end)}
+          </span>
+        </span>
       ) : (
         <span className="tabular">
           {formatShortDate(item.planned_start)}, {formatTime(item.planned_start)} –

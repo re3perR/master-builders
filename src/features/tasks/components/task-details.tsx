@@ -7,7 +7,8 @@ import { formatDateTime, formatInterval } from "@/lib/time";
 import type { TaskCard } from "../types";
 import { isRescheduled } from "./task-header";
 
-const linkClass = "font-medium underline decoration-line underline-offset-4 hover:decoration-ink";
+const linkClass =
+  "inline-flex min-h-11 items-center font-medium underline decoration-line underline-offset-4 hover:decoration-ink sm:min-h-0";
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -29,8 +30,12 @@ function Stamp({ at, by }: { at: string; by?: string | null }) {
 
 function TaskLink({ task }: { task: { id: string; number: number; title: string } }) {
   return (
-    <Link href={`/tasks/${task.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">
-      <span className="tabular font-medium">{taskCode(task.number)}</span> {task.title}
+    <Link
+      href={`/tasks/${task.id}`}
+      className="inline-flex min-h-11 items-center gap-1 underline decoration-line underline-offset-4 hover:decoration-ink sm:min-h-0"
+    >
+      <span className="tabular font-medium">{taskCode(task.number)}</span>
+      <span>{task.title}</span>
     </Link>
   );
 }
