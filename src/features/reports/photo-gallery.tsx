@@ -88,7 +88,6 @@ export function PhotoGallery({ taskId, reportId, label, photos }: PhotoGalleryPr
             >
               {photo.url ? (
                 <Image
-                  unoptimized
                   fill
                   src={photo.url}
                   alt=""
