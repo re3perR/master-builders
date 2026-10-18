@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { usePolling } from "@/hooks/use-polling";
 import type { Snapshot } from "@/lib/snapshot";
 import { loadCrews } from "../actions";
+import { divisionWithoutCrews } from "../crew-notices";
 import type { CrewSummary } from "../db-types";
 import { plural } from "../plural";
 import type { CrewList } from "../types";
@@ -33,10 +34,7 @@ export function CrewsView({ initial }: { initial: Snapshot<CrewList> }) {
         </ul>
       ) : (
         <Card>
-          <EmptyState
-            title="В подразделении нет бригад"
-            description="Бригады и бригадиров заводят при настройке системы. Обратитесь к администратору компании."
-          />
+          <EmptyState {...divisionWithoutCrews} />
         </Card>
       )}
     </div>

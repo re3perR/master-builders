@@ -8,6 +8,7 @@ import { RefreshStatus } from "@/components/app/refresh-status";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { divisionWithoutCrews, foremanWithoutCrew } from "@/features/directory/crew-notices";
 import { newTaskLink, scheduleLink } from "@/features/overview/links";
 import { usePolling } from "@/hooks/use-polling";
 import type { UserRole } from "@/lib/database.types";
@@ -113,21 +114,7 @@ function EmptyDay({ groups, date, today, role }: EmptyDayProps) {
       <Card>
         <EmptyState
           icon={<CalendarX2 aria-hidden className="size-8" />}
-          title={role === "foreman" ? "Вы не закреплены за бригадой" : "В подразделении нет бригад"}
-          description={
-            role === "foreman"
-              ? "Расписание появится, когда диспетчер закрепит за вами бригаду."
-              : role === "dispatcher"
-                ? "Задания планируются на бригады. Добавьте бригаду в справочнике, чтобы составить расписание."
-                : "Расписание появится, когда в подразделении будут бригады."
-          }
-          action={
-            role === "dispatcher" ? (
-              <Link href="/crews" className={buttonVariants({ variant: "secondary" })}>
-                Открыть бригады
-              </Link>
-            ) : null
-          }
+          {...(role === "foreman" ? foremanWithoutCrew : divisionWithoutCrews)}
         />
       </Card>
     );

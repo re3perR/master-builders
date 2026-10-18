@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/app/page-header";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { foremanWithoutCrew } from "@/features/directory/crew-notices";
 import { MyTasksBoard } from "@/features/field/my-tasks-board";
 import { getMyTasks } from "@/features/field/queries";
 import { parseView } from "@/features/field/types";
@@ -19,10 +20,7 @@ export default async function MyTasksPage({ searchParams }: PageProps<"/my">) {
       <div className="mx-auto max-w-5xl">
         <PageHeader title="Мои задания" />
         <Card>
-          <EmptyState
-            title="Бригада не назначена"
-            description="Ваш профиль не связан с бригадой, поэтому заданий нет. Обратитесь к диспетчеру подразделения."
-          />
+          <EmptyState {...foremanWithoutCrew} />
         </Card>
       </div>
     );

@@ -47,12 +47,12 @@ export default async function NewTaskPage({ searchParams }: PageProps<"/tasks/ne
         {source ? `${taskCode(source.number)} ${source.title}` : day ? "Расписание" : "Задания"}
       </Link>
       <PageHeader
-        title={source ? "Новое задание на основе" : "Новое задание"}
+        title={source ? `Новое задание на основе ${taskCode(source.number)}` : "Новое задание"}
         description="Задание сразу получит статус «Назначено» и появится у бригадира выбранной бригады."
       />
       <div className="mb-5 flex flex-col gap-3">
         {source ? (
-          <Alert title={`На основе ${taskCode(source.number)} «${source.title}»`}>
+          <Alert>
             Объект, бригада, название, описание и приоритет перенесены. Сроки укажите заново, отчёты и обсуждение
             исходного задания не копируются.
           </Alert>
@@ -67,19 +67,18 @@ export default async function NewTaskPage({ searchParams }: PageProps<"/tasks/ne
             {note}
           </Alert>
         ))}
-        {!choices.sites.length || !choices.crews.length ? (
-          <Alert variant="warning" title="Не хватает справочников">
-            {!choices.sites.length ? "В подразделении нет активных объектов. " : ""}
-            {!choices.crews.length ? "В подразделении нет активных бригад. " : ""}
-            Добавьте их в разделах{" "}
+        {!choices.sites.length ? (
+          <Alert variant="warning" title="Нет активных объектов">
+            Добавьте объект в разделе{" "}
             <Link href="/sites" className="underline">
               «Объекты»
-            </Link>{" "}
-            и{" "}
-            <Link href="/crews" className="underline">
-              «Бригады»
             </Link>
             .
+          </Alert>
+        ) : null}
+        {!choices.crews.length ? (
+          <Alert variant="warning" title="Нет активных бригад">
+            Бригады заводят при настройке системы. Обратитесь к администратору компании.
           </Alert>
         ) : null}
       </div>

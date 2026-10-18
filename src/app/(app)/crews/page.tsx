@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/app/page-header";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CrewsView } from "@/features/directory/components/crews-view";
+import { foremanWithoutCrew } from "@/features/directory/crew-notices";
 import { listCrews } from "@/features/directory/queries";
 import { requireViewer } from "@/lib/auth";
 import { snapshot } from "@/lib/snapshot";
@@ -19,10 +20,7 @@ export default async function CrewsPage() {
       <>
         <PageHeader title="Бригада" />
         <Card>
-          <EmptyState
-            title="Вы пока не закреплены за бригадой"
-            description="Бригаду закрепляют при настройке системы. Обратитесь к диспетчеру или администратору компании."
-          />
+          <EmptyState {...foremanWithoutCrew} />
         </Card>
       </>
     );
