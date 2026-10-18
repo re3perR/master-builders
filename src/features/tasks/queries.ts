@@ -4,17 +4,13 @@ import { toAppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
 import { createClient } from "@/lib/supabase/server";
 import { dayRange } from "@/lib/time";
-import { isGuid, normalizeSearchText, PAGE_SIZE, parseSearch, type TaskFilters } from "./filters";
+import { isGuid, PAGE_SIZE, parseSearch, searchPattern, type TaskFilters } from "./filters";
 import type { CrewChoice, SiteChoice, TaskCard, TaskFilterOptions, TaskListPage } from "./types";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 const listColumns =
   "id, number, title, site_id, site_name, crew_id, crew_name, priority, status, address_snapshot, planned_start, planned_end, planned_end_original, is_overdue, has_open_obstacle, obstacle_category, obstacle_reason, obstacle_opened_at, pending_submitted_at";
-
-function likePattern(value: string) {
-  return `%${normalizeSearchText(value).replace(/[\\%_]/g, (char) => `\\${char}`)}%`;
-}
 
 function quoted(value: string) {
   return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
@@ -41,9 +37,9 @@ function filteredTasks(supabase: Supabase, filters: TaskFilters, head = false) {
   if (search.numberOnly && search.number !== null) {
     query = query.eq("number", search.number);
   } else if (search.number !== null) {
-    query = query.or(`number.eq.${search.number},search_text.ilike.${quoted(likePattern(search.text))}`);
+    query = query.or(`number.eq.${search.number},search_text.imatch.${quoted(searchPattern(search.text))}`);
   } else if (search.text) {
-    query = query.ilike("search_text", likePattern(search.text));
+    query = query.regexIMatch("search_text", searchPattern(search.text));
   }
 
   return query;
@@ -76,6 +72,8 @@ export async function getFilterOptions(): Promise<TaskFilterOptions> {
     supabase.from("sites").select("id, name, archived_at").order("name"),
     supabase.from("crews").select("id, name, archived_at").order("name"),
   ]);
+  if (sites.error) throw sites.error;
+  if (crews.error) throw crews.error;
   const toOption = (row: { id: string; name: string; archived_at: string | null }) => ({
     id: row.id,
     name: row.name,
@@ -83,25 +81,27 @@ export async function getFilterOptions(): Promise<TaskFilterOptions> {
   });
   const byArchive = (a: { archived: boolean }, b: { archived: boolean }) => Number(a.archived) - Number(b.archived);
   return {
-    sites: (sites.data ?? []).map(toOption).sort(byArchive),
-    crews: (crews.data ?? []).map(toOption).sort(byArchive),
+    sites: sites.data.map(toOption).sort(byArchive),
+    crews: crews.data.map(toOption).sort(byArchive),
   };
 }
 
 async function crewChoices(supabase: Supabase): Promise<CrewChoice[]> {
-  const { data: crews } = await supabase
+  const { data: crews, error } = await supabase
     .from("crews")
     .select("id, name, foreman_id")
     .is("archived_at", null)
     .order("name");
-  const foremanIds = (crews ?? []).map((crew) => crew.foreman_id);
-  const { data: people } = foremanIds.length
+  if (error) throw error;
+  const foremanIds = crews.map((crew) => crew.foreman_id);
+  const { data: people, error: peopleError } = foremanIds.length
     ? await supabase.from("profiles").select("id, full_name").in("id", foremanIds)
-    : { data: [] };
-  return (crews ?? []).map((crew) => ({
+    : { data: [], error: null };
+  if (peopleError) throw peopleError;
+  return crews.map((crew) => ({
     id: crew.id,
     name: crew.name,
-    foreman_name: people?.find((person) => person.id === crew.foreman_id)?.full_name ?? null,
+    foreman_name: people.find((person) => person.id === crew.foreman_id)?.full_name ?? null,
   }));
 }
 
@@ -115,17 +115,19 @@ export async function getTaskChoices(): Promise<{ sites: SiteChoice[]; crews: Cr
     supabase.from("sites").select("id, name, address, access_note").is("archived_at", null).order("name"),
     crewChoices(supabase),
   ]);
-  return { sites: sites.data ?? [], crews };
+  if (sites.error) throw sites.error;
+  return { sites: sites.data, crews };
 }
 
 export async function getSourceTask(id: string | null) {
   if (!isGuid(id)) return null;
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("tasks")
     .select("id, number, title, description, site_id, crew_id, priority, status")
     .eq("id", id)
     .maybeSingle();
+  if (error) throw error;
   return data;
 }
 
@@ -133,7 +135,8 @@ export const getTaskCard = cache(async (id: string): Promise<TaskCard | null> =>
   if (!isGuid(id)) return null;
   const supabase = await createClient();
 
-  const { data: task } = await supabase.from("tasks").select("*").eq("id", id).maybeSingle();
+  const { data: task, error } = await supabase.from("tasks").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
   if (!task) return null;
 
   const [site, crew, obstacle, reports, messages, source, followUps] = await Promise.all([
@@ -153,17 +156,20 @@ export const getTaskCard = cache(async (id: string): Promise<TaskCard | null> =>
     supabase.from("task_messages").select("id", { count: "exact", head: true }).eq("task_id", id),
     task.source_task_id
       ? supabase.from("tasks").select("id, number, title").eq("id", task.source_task_id).maybeSingle()
-      : Promise.resolve({ data: null }),
+      : Promise.resolve({ data: null, error: null }),
     supabase.from("tasks").select("id, number, title").eq("source_task_id", id).order("number"),
   ]);
+  const failed = [site, crew, obstacle, reports, messages, source, followUps].find((result) => result.error);
+  if (failed?.error) throw failed.error;
 
   const profileIds = [task.created_by, task.cancelled_by, crew.data?.foreman_id, obstacle.data?.opened_by].filter(
     Boolean,
   ) as string[];
-  const { data: people } = profileIds.length
+  const { data: people, error: peopleError } = profileIds.length
     ? await supabase.from("profiles").select("id, full_name").in("id", profileIds)
-    : { data: [] };
-  const nameOf = (profileId?: string | null) => people?.find((person) => person.id === profileId)?.full_name ?? null;
+    : { data: [], error: null };
+  if (peopleError) throw peopleError;
+  const nameOf = (profileId?: string | null) => people.find((person) => person.id === profileId)?.full_name ?? null;
 
   const reportRows = reports.data ?? [];
   const pending = reportRows.find((report) => report.decision === "pending");

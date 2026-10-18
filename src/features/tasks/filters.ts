@@ -124,6 +124,10 @@ export function normalizeSearchText(value: string) {
   return value.toLowerCase().replace(/ё/g, "е");
 }
 
+export function searchPattern(value: string) {
+  return normalizeSearchText(value).replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
+}
+
 export function weekOf(day: string) {
   const weekday = (inZone(dayRange(day).start).getDay() + 6) % 7;
   const from = shiftDay(day, -weekday);
