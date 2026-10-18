@@ -15,7 +15,8 @@
     "format:check": "prettier --check .",
     "user:password": "tsx --env-file=.env.local scripts/set-password.ts",
     "cleanup:uploads": "tsx --env-file=.env.local scripts/cleanup-uploads.ts",
-    "seed:photos": "tsx --env-file=.env.local scripts/seed-photos.ts"
+    "seed:photos": "tsx --env-file=.env.local scripts/seed-photos.ts",
+    "crew:archive": "tsx --env-file=.env.local scripts/archive-crew.ts"
   },
   "engines": {
     "node": ">=20.9"
