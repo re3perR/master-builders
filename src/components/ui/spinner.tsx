@@ -9,7 +9,3 @@ export function Spinner({ className, label = "Загрузка" }: { className?:
     </span>
   );
 }
-
-export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("animate-pulse rounded-md bg-line/60", className)} />;
-}

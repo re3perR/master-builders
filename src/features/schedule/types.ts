@@ -1,6 +1,6 @@
 import type { ScheduleTask } from "@/features/overview/db-types";
 
-export type ScheduleCrew = {
+type ScheduleCrew = {
   id: string;
   name: string;
   archived: boolean;

@@ -62,5 +62,5 @@ export const limits = {
   accessNote: { max: 2000 },
   contact: { max: 200 },
   crewName: { min: 2, max: 120 },
-  memberName: { min: 1, max: 120 },
+  memberName: { max: 120 },
 };

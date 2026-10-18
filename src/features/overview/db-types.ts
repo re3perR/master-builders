@@ -46,11 +46,11 @@ type QueueTask = {
   planned_end: string;
 };
 
-export type OverdueItem = QueueTask & { obstacle_category: ObstacleCategory | null };
+type OverdueItem = QueueTask & { obstacle_category: ObstacleCategory | null };
 
-export type ObstacleItem = QueueTask & { category: ObstacleCategory; reason: string; opened_at: string };
+type ObstacleItem = QueueTask & { category: ObstacleCategory; reason: string; opened_at: string };
 
-export type ReviewItem = QueueTask & { report_version: number; submitted_at: string };
+type ReviewItem = QueueTask & { report_version: number; submitted_at: string };
 
 export type AttentionQueue = {
   overdue: OverdueItem[];

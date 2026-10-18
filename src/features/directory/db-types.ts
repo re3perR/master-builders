@@ -1,6 +1,6 @@
 import type { Fn } from "@/lib/database.types";
 
-export type SiteMutationResult = {
+type SiteMutationResult = {
   result: "ok";
   site_id: string;
   changed: boolean;
@@ -8,7 +8,7 @@ export type SiteMutationResult = {
   archived_at?: string | null;
 };
 
-export type CrewMutationResult = {
+type CrewMutationResult = {
   result: "ok";
   crew_id: string;
   changed: boolean;

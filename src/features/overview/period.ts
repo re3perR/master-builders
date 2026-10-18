@@ -4,7 +4,7 @@ export const periodOptions = [7, 30, 90] as const;
 
 export type PeriodDays = (typeof periodOptions)[number];
 
-export const defaultPeriod: PeriodDays = 30;
+const defaultPeriod: PeriodDays = 30;
 
 export type Period = {
   days: PeriodDays;

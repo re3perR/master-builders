@@ -4,6 +4,7 @@ import { RefreshCw } from "lucide-react";
 import Link from "next/link";
 import type { AppError } from "@/lib/errors";
 import { cn } from "@/lib/cn";
+import { timeZone } from "@/lib/time";
 
 type RefreshStatusProps = {
   loadedAt: string;
@@ -18,7 +19,7 @@ function clock(value: string) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    timeZone: process.env.NEXT_PUBLIC_COMPANY_TIMEZONE || "Europe/Moscow",
+    timeZone,
   }).format(new Date(value));
 }
 

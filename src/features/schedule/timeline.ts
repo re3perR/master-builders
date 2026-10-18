@@ -2,7 +2,7 @@ const hour = 3_600_000;
 
 type Interval = { planned_start: string; planned_end: string; number: number };
 
-export type Placed<T> = { task: T; lane: number; start: number; end: number };
+type Placed<T> = { task: T; lane: number; start: number; end: number };
 
 export function placeInLanes<T extends Interval>(tasks: T[], dayStart: number, dayEnd: number) {
   const lanes: number[] = [];

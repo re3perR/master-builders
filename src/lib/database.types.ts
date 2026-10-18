@@ -53,7 +53,7 @@ export type Crew = {
   updated_at: string;
 };
 
-export type CrewMember = {
+type CrewMember = {
   id: string;
   crew_id: string;
   name: string;
@@ -107,7 +107,7 @@ export type Task = {
   version: number;
 };
 
-export type TaskObstacle = {
+type TaskObstacle = {
   id: string;
   task_id: string;
   category: ObstacleCategory;
@@ -120,7 +120,7 @@ export type TaskObstacle = {
   closed_by_system: boolean;
 };
 
-export type TaskMessage = {
+type TaskMessage = {
   id: string;
   task_id: string;
   author_id: string;
@@ -144,7 +144,7 @@ export type TaskReport = {
   client_key: string;
 };
 
-export type Upload = {
+type Upload = {
   id: string;
   task_id: string;
   uploaded_by: string;
@@ -158,7 +158,7 @@ export type Upload = {
   created_at: string;
 };
 
-export type TaskEvent = {
+type TaskEvent = {
   id: number;
   task_id: string;
   actor_id: string | null;
@@ -222,7 +222,7 @@ export type Database = {
   };
 };
 
-export type CoreFunctions = {
+type CoreFunctions = {
   create_task: Fn<
     {
       p_title: string;

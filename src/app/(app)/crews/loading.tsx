@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (

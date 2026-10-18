@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-export const taskTabs = [
+const taskTabs = [
   { key: "details", label: "Детали" },
   { key: "discussion", label: "Обсуждение" },
   { key: "reports", label: "Отчёты" },

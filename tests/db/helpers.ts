@@ -1,8 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { Client, type PoolClient } from "pg";
 
-export const databaseUrl =
-  process.env.TEST_DATABASE_URL ?? "postgres://postgres:postgres@127.0.0.1:5432/master_builders_test";
+const databaseUrl = process.env.TEST_DATABASE_URL ?? "postgres://postgres:postgres@127.0.0.1:5432/master_builders_test";
 
 export function seedId(key: string) {
   const hex = createHash("md5").update(`master-builders:${key}`).digest("hex");

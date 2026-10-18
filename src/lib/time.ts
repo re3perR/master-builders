@@ -9,7 +9,7 @@ export function inZone(value: string | number | Date) {
   return new TZDate(new Date(value).getTime(), timeZone);
 }
 
-export function nowInZone() {
+function nowInZone() {
   return TZDate.tz(timeZone);
 }
 
