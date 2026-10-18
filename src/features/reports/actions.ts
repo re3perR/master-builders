@@ -16,7 +16,7 @@ const taskVersion = {
 
 const reportInput = z.object({
   ...taskVersion,
-  comment: z.string().max(10000),
+  comment: z.string().trim().max(10000),
   uploadIds: z.array(z.guid()).max(20),
 });
 
@@ -26,7 +26,7 @@ const decisionInput = z.object({
 });
 
 const returnInput = decisionInput.extend({
-  note: z.string().max(10000),
+  note: z.string().trim().max(10000),
 });
 
 const invalid: ActionResult<never> = {

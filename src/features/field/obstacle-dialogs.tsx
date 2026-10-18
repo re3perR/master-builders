@@ -2,6 +2,7 @@
 
 import { AlertOctagon, CircleCheck } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import { ActionError } from "@/components/ui/action-error";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { describedBy, Field } from "@/components/ui/field";
@@ -10,7 +11,6 @@ import { Spinner } from "@/components/ui/spinner";
 import type { ObstacleCategory } from "@/lib/database.types";
 import type { AppError } from "@/lib/errors";
 import { obstacleLabels } from "@/lib/labels";
-import { ActionError } from "./action-error";
 import { closeObstacle, openObstacle } from "./actions";
 import { useTaskAction } from "./use-task-action";
 
@@ -186,10 +186,10 @@ export function CloseObstacleDialog({ taskId, version }: { taskId: string; versi
       <DialogTrigger asChild>
         <Button variant="secondary" className="w-full sm:w-auto">
           <CircleCheck aria-hidden className="size-4" />
-          Снять препятствие
+          Закрыть препятствие
         </Button>
       </DialogTrigger>
-      <DialogContent title="Снять препятствие" description="Комментарий попадёт в историю задания.">
+      <DialogContent title="Закрыть препятствие" description="Комментарий попадёт в историю задания.">
         <form onSubmit={submit} noValidate className="flex flex-col gap-4">
           <Field
             id="obstacle-comment"
@@ -219,7 +219,7 @@ export function CloseObstacleDialog({ taskId, version }: { taskId: string; versi
             </DialogClose>
             <Button type="submit" disabled={pending}>
               {pending ? <Spinner label="Сохраняем" /> : null}
-              Снять препятствие
+              Закрыть препятствие
             </Button>
           </div>
         </form>

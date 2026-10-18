@@ -34,6 +34,7 @@ const fieldNames: Record<string, string> = {
   access_note: "Примечание о доступе",
   contact: "Контакт",
   members: "Состав",
+  source_task_id: "Исходное задание",
 };
 
 const stateMessages: Record<string, string> = {
@@ -43,6 +44,20 @@ const stateMessages: Record<string, string> = {
   report_already_decided: "По этому отчёту уже принято решение.",
   site_in_use: "Объект используется в заданиях, его можно только архивировать.",
   active_tasks: "Есть незавершённые задания, архивирование невозможно.",
+  site_archived: "Объект в архиве, изменить его нельзя.",
+  crew_archived: "Бригада в архиве, изменить её нельзя.",
+};
+
+const notFoundMessages: Record<string, string> = {
+  task_not_found: "Задание не найдено или у вас нет к нему доступа.",
+  report_not_found: "Отчёт не найден или у вас нет к нему доступа.",
+  site_not_found: "Объект не найден или у вас нет к нему доступа.",
+  crew_not_found: "Бригада не найдена или у вас нет к ней доступа.",
+};
+
+export const connectionLost: AppError = {
+  kind: "temporary",
+  message: "Нет связи с сервером. Проверьте подключение и повторите.",
 };
 
 function parseDetail(details: string | null | undefined): Record<string, unknown> {
@@ -62,7 +77,15 @@ function validationMessage(message: string, detail: Record<string, unknown>) {
     case "invalid_interval":
       return "Начало должно быть раньше окончания.";
     case "archived_reference":
-      return `${label ?? "Запись"} в архиве и не может быть выбрана.`;
+      if (field === "site_id") return "Объект в архиве, выберите другой.";
+      if (field === "crew_id") return "Бригада в архиве, выберите другую.";
+      return "Выбранная запись в архиве.";
+    case "too_many_members": {
+      const max = detail.max_count ?? detail.max;
+      return typeof max === "number"
+        ? `В составе бригады может быть не больше ${max} человек.`
+        : "В составе бригады слишком много человек.";
+    }
     case "nothing_changed":
       return "Новые значения совпадают с текущими.";
     case "unsupported_file_type":
@@ -76,6 +99,7 @@ function validationMessage(message: string, detail: Record<string, unknown>) {
     case "too_many_staged_files":
       return "Слишком много незавершённых загрузок. Отправьте отчёт или повторите позже.";
     default: {
+      if (field === "client_key") return "Не удалось обработать запрос. Обновите страницу и повторите.";
       if (label && typeof detail.min === "number" && typeof detail.max === "number") {
         return `${label}: от ${detail.min} до ${detail.max} символов.`;
       }
@@ -99,16 +123,29 @@ export function toAppError(error: RawError | null | undefined): AppError {
       return { kind: "auth", code, message: "Сессия истекла. Войдите снова." };
     case "MB403":
     case "42501":
-      return { kind: "forbidden", code, message: "Недостаточно прав для этого действия." };
+      return {
+        kind: "forbidden",
+        code,
+        message:
+          error.message === "profile_missing"
+            ? "Профиль сотрудника не настроен. Обратитесь к руководителю подразделения."
+            : "Недостаточно прав для этого действия.",
+      };
     case "MB404":
     case "PGRST116":
-      return { kind: "not_found", code, message: "Запись не найдена или у вас нет к ней доступа." };
+      return {
+        kind: "not_found",
+        code,
+        message: notFoundMessages[error.message ?? ""] ?? "Запись не найдена или у вас нет к ней доступа.",
+      };
     case "MB409":
       return {
         kind: "conflict",
         code,
         message:
-          "Задание изменилось, пока вы работали. Мы показали актуальные данные, проверьте их и повторите действие.",
+          "current_version" in detail
+            ? "Задание изменилось, пока вы работали. Мы показали актуальные данные, проверьте их и повторите действие."
+            : "Данные изменил другой пользователь. Мы показали актуальные данные, проверьте их и повторите действие.",
       };
     case "MB422":
       return {
@@ -125,6 +162,12 @@ export function toAppError(error: RawError | null | undefined): AppError {
       };
     case "23505":
       return { kind: "conflict", code, message: "Такая запись уже существует." };
+    case "23503":
+      return {
+        kind: "conflict",
+        code,
+        message: "Связанная запись изменилась или удалена. Мы показали актуальные данные, повторите действие.",
+      };
     default:
       return {
         kind: "temporary",

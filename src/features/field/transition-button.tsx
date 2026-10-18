@@ -1,10 +1,10 @@
 "use client";
 
 import { Hammer, Handshake } from "lucide-react";
+import { ActionError } from "@/components/ui/action-error";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
-import { ActionError } from "./action-error";
 import { acceptTask, startTask } from "./actions";
 import { useTaskAction } from "./use-task-action";
 

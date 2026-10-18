@@ -10,9 +10,10 @@ export function ActionError({ error, className }: { error: AppError | null; clas
       {error.kind === "auth" ? (
         <>
           {" "}
-          <Link href="/login?expired=1" className="font-medium underline">
-            Перейти ко входу
+          <Link href="/login?expired=1" target="_blank" rel="noreferrer" className="font-medium underline">
+            Войти в новой вкладке
           </Link>
+          , затем вернитесь сюда и повторите действие.
         </>
       ) : null}
     </Alert>

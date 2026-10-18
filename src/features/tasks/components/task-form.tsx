@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";
+import { ActionError } from "@/components/ui/action-error";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { describedBy, Field } from "@/components/ui/field";
+import { describedBy, Field, focusFirst } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { useClientKey } from "@/hooks/use-client-key";
 import type { OverlapItem } from "@/lib/database.types";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
+import type { ActionResult } from "@/lib/rpc";
 import { createTask } from "../actions";
-import type { CrewChoice, SiteChoice } from "../types";
+import type { CrewChoice, SaveResult, SiteChoice } from "../types";
 import { checkTaskDraft, type FieldErrors, type TaskDraftInput } from "../validation";
-import { FormError } from "./form-error";
 import { OverlapNotice } from "./overlap-notice";
 import { PriorityField } from "./priority-field";
 
@@ -25,11 +26,6 @@ const fieldIds: Record<string, string> = {
   planned_start: "task-start",
   planned_end: "task-end",
 };
-
-function focusFirst(errors: FieldErrors) {
-  const first = Object.keys(fieldIds).find((field) => errors[field]);
-  if (first) document.getElementById(fieldIds[first])?.focus();
-}
 
 type TaskFormProps = {
   defaults: TaskDraftInput;
@@ -66,19 +62,25 @@ export function TaskForm({ defaults, sites, crews, sourceTaskId, cancelHref, tim
     const checked = checkTaskDraft(values);
     if (!checked.ok) {
       setErrors(checked.errors);
-      focusFirst(checked.errors);
+      focusFirst(fieldIds, checked.errors);
       return;
     }
     setErrors({});
     setFailure(null);
     startTransition(async () => {
-      const result = await createTask(values, clientKey.current(), acknowledge, sourceTaskId);
+      let result: ActionResult<SaveResult>;
+      try {
+        result = await createTask(values, clientKey.current(), acknowledge, sourceTaskId);
+      } catch {
+        startTransition(() => setFailure(connectionLost));
+        return;
+      }
       startTransition(() => {
         if (!result.ok) {
           const field = result.error.field;
           if (result.error.kind === "validation" && field && fieldIds[field]) {
             setErrors({ [field]: result.error.message });
-            focusFirst({ [field]: result.error.message });
+            focusFirst(fieldIds, { [field]: result.error.message });
           } else {
             setFailure(result.error);
           }
@@ -102,7 +104,7 @@ export function TaskForm({ defaults, sites, crews, sourceTaskId, cancelHref, tim
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
-      <FormError error={failure} />
+      <ActionError error={failure} />
 
       <Field
         id="task-title"

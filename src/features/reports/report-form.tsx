@@ -13,12 +13,12 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
+import { ActionError } from "@/components/ui/action-error";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { describedBy, Field } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { ActionError } from "@/features/field/action-error";
 import { useClientKey } from "@/hooks/use-client-key";
 import type { TaskMutationResult } from "@/lib/database.types";
 import type { AppError } from "@/lib/errors";
@@ -51,7 +51,7 @@ type ReportFormProps = {
 
 const unreachable: AppError = {
   kind: "temporary",
-  message: "Не удалось связаться с сервером. Текст и фото сохранены в форме, повторите отправку.",
+  message: "Нет связи с сервером. Текст и фото сохранены в форме, повторите отправку.",
 };
 
 const ignoreChanges = () => () => {};
@@ -484,14 +484,14 @@ export function ReportForm({ taskId, taskVersion, staged }: ReportFormProps) {
       <ActionError error={error} />
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <Button type="submit" disabled={busy || submitting} aria-describedby="report-submit-hint">
+        <Button type="submit" disabled={busy || submitting} aria-describedby="report-submit-hint" className="shrink-0">
           {submitting ? <Spinner label="Отправляем" /> : <Send aria-hidden className="size-4" />}
           {submitting ? "Отправляем…" : "Отправить отчёт"}
         </Button>
-        <Link href={`/tasks/${taskId}`} className={buttonVariants({ variant: "ghost" })}>
+        <Link href={`/tasks/${taskId}`} className={buttonVariants({ variant: "ghost", className: "shrink-0" })}>
           Вернуться к заданию
         </Link>
-        <p id="report-submit-hint" className="text-sm text-ink-muted sm:ml-2">
+        <p id="report-submit-hint" className="min-w-0 text-sm text-ink-muted sm:ml-2 sm:flex-1">
           {busy
             ? "Дождитесь окончания загрузки фото."
             : `Фото в отчёте: ${uploaded.length} из ${maxPhotos}. После отправки отчёт уйдёт на проверку диспетчеру.`}

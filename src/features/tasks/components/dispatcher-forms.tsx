@@ -2,14 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent, type ReactNode } from "react";
+import { ActionError } from "@/components/ui/action-error";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
-import { describedBy, Field } from "@/components/ui/field";
+import { describedBy, Field, focusFirst } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { useClientKey } from "@/hooks/use-client-key";
 import type { OverlapItem } from "@/lib/database.types";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
 import { statusLabels, taskCode } from "@/lib/labels";
 import { timeZoneLabel, toLocalInput } from "@/lib/time";
@@ -25,7 +26,6 @@ import {
   type ReassignInput,
   type RescheduleInput,
 } from "../validation";
-import { FormError } from "./form-error";
 import { OverlapNotice } from "./overlap-notice";
 import { PriorityField } from "./priority-field";
 
@@ -34,11 +34,6 @@ type FormProps = {
   available: boolean;
   onDone: (message: string) => void;
 };
-
-function focusFirst(fieldIds: Record<string, string>, errors: FieldErrors) {
-  const first = Object.keys(fieldIds).find((field) => errors[field]);
-  if (first) document.getElementById(fieldIds[first])?.focus();
-}
 
 function useMutation(fieldIds: Record<string, string>) {
   const router = useRouter();
@@ -61,7 +56,13 @@ function useMutation(fieldIds: Record<string, string>) {
     setErrors({});
     setFailure(null);
     startTransition(async () => {
-      const result = await request(clientKey.current());
+      let result: ActionResult<T>;
+      try {
+        result = await request(clientKey.current());
+      } catch {
+        startTransition(() => setFailure(connectionLost));
+        return;
+      }
       startTransition(() => {
         if (result.ok) return onSuccess(result.data);
         const { kind, field, message } = result.error;
@@ -170,7 +171,7 @@ export function EditForm({ card, available, onDone }: FormProps) {
       {available && card.status !== "Assigned" ? (
         <Alert>Бригада уже приняла задание: изменения будут отмечены в карточке и истории.</Alert>
       ) : null}
-      <FormError error={mutation.failure} />
+      <ActionError error={mutation.failure} />
       <Field
         id="edit-title"
         label="Название"
@@ -295,7 +296,7 @@ export function RescheduleForm({ card, available, onDone }: FormProps) {
       {available && card.status !== "Assigned" ? (
         <Alert>Бригада уже приняла задание: перенос будет отмечен как изменение условий.</Alert>
       ) : null}
-      <FormError error={mutation.failure} />
+      <ActionError error={mutation.failure} />
       <fieldset>
         <legend className="text-sm font-medium">Новые плановые сроки</legend>
         <p id="reschedule-zone" className="mb-2 text-sm text-ink-muted">
@@ -421,7 +422,7 @@ export function ReassignForm({ card, available, crews, onDone }: FormProps & { c
           доступ.
         </Alert>
       )}
-      <FormError error={mutation.failure} />
+      <ActionError error={mutation.failure} />
       {options.length ? (
         <Field
           id="reassign-crew"
@@ -521,7 +522,7 @@ export function CancelForm({ card, available, onDone }: FormProps) {
       ) : (
         <Unavailable card={card}>Отменить можно только незавершённое задание.</Unavailable>
       )}
-      <FormError error={mutation.failure} />
+      <ActionError error={mutation.failure} />
       <Field
         id="cancel-reason"
         label="Причина отмены"

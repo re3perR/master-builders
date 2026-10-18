@@ -52,7 +52,7 @@ test("бригадир со смартфона проходит работу с 
   await expect(page.getByText(reason)).toBeVisible();
   await expect(taskStatus(page, "В работе")).toBeVisible();
   await expect(page.getByRole("button", { name: "Отправить отчёт" })).toBeDisabled();
-  await expect(page.getByText("Отчёт можно отправить после того, как препятствие будет снято.")).toBeVisible();
+  await expect(page.getByText("Отчёт можно отправить после того, как препятствие будет закрыто.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Отправить отчёт" })).toHaveCount(0);
   await expectNoHorizontalScroll(page);
 
@@ -63,13 +63,13 @@ test("бригадир со смартфона проходит работу с 
   await expectNoHorizontalScroll(page);
   await page.getByRole("link", { name: "Открыть карточку задания" }).click();
 
-  await page.getByRole("button", { name: "Снять препятствие" }).click();
-  const closeDialog = page.getByRole("dialog", { name: "Снять препятствие" });
-  await closeDialog.getByRole("button", { name: "Снять препятствие" }).click();
+  await page.getByRole("button", { name: "Закрыть препятствие" }).click();
+  const closeDialog = page.getByRole("dialog", { name: "Закрыть препятствие" });
+  await closeDialog.getByRole("button", { name: "Закрыть препятствие" }).click();
   await expect(closeDialog.getByText("Напишите комментарий: от 3 до 2000 символов.")).toBeVisible();
   await closeDialog.getByLabel("Как решили проблему").fill(resolution);
   await expectNoHorizontalScroll(page);
-  await closeDialog.getByRole("button", { name: "Снять препятствие" }).click();
+  await closeDialog.getByRole("button", { name: "Закрыть препятствие" }).click();
   await expect(closeDialog).toBeHidden();
   await expect(page.getByRole("heading", { name: "Препятствие: материалы" })).toHaveCount(0);
   await expect(taskStatus(page, "В работе")).toBeVisible();

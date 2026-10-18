@@ -38,3 +38,8 @@ export function describedBy(id: string, error?: string | null, hint?: unknown) {
   if (hint) return `${id}-hint`;
   return undefined;
 }
+
+export function focusFirst(fieldIds: Record<string, string>, errors: Record<string, string | null | undefined>) {
+  const first = Object.keys(fieldIds).find((field) => errors[field]);
+  if (first) document.getElementById(fieldIds[first])?.focus();
+}

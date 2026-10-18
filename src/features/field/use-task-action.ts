@@ -3,13 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useClientKey } from "@/hooks/use-client-key";
-import type { AppError } from "@/lib/errors";
+import { connectionLost, type AppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
-
-const unreachable: AppError = {
-  kind: "temporary",
-  message: "Не удалось связаться с сервером. Проверьте подключение и повторите.",
-};
 
 export function useTaskAction() {
   const router = useRouter();
@@ -24,7 +19,7 @@ export function useTaskAction() {
       try {
         result = await action(clientKey.current());
       } catch {
-        setError(unreachable);
+        setError(connectionLost);
         return;
       }
       if (result.ok) {
