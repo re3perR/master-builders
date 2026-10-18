@@ -23,7 +23,7 @@ export function ReviewActions({ card, viewer, tab }: { card: TaskCard; viewer: V
   return (
     <section
       aria-labelledby="review-title"
-      className="rounded-[var(--radius-card)] border border-[#c7d2fe] bg-status-review-soft p-4"
+      className="rounded-[var(--radius-card)] border border-status-review-line bg-status-review-soft p-4"
     >
       <div className="flex gap-3">
         <Clock3 aria-hidden className="mt-0.5 size-5 shrink-0 text-status-review" />

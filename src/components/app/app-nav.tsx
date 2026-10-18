@@ -36,7 +36,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
               active && "bg-white/10 font-medium text-white",
             )}
           >
-            <Icon aria-hidden className={cn("size-5", active && "text-[#fb923c]")} />
+            <Icon aria-hidden className={cn("size-5", active && "text-nav-accent")} />
             {item.label}
           </Link>
         );
@@ -66,7 +66,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
                   active && "font-medium text-white",
                 )}
               >
-                <Icon aria-hidden className={cn("size-5", active && "text-[#fb923c]")} />
+                <Icon aria-hidden className={cn("size-5", active && "text-nav-accent")} />
                 <span className="truncate">{item.label}</span>
               </Link>
             </li>

@@ -9,7 +9,12 @@ type ReturnNoteProps = {
 
 export function ReturnNote({ returned, className }: ReturnNoteProps) {
   return (
-    <div className={cn("rounded-lg border border-[#fed7aa] bg-status-progress-soft p-3 text-[#7c2d12]", className)}>
+    <div
+      className={cn(
+        "rounded-lg border border-status-progress-line bg-status-progress-soft p-3 text-status-progress",
+        className,
+      )}
+    >
       <p className="flex items-center gap-2 font-semibold">
         <RotateCcw aria-hidden className="size-4 shrink-0" />
         Отчёт, версия {returned.version}, возвращён на доработку

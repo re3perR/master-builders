@@ -53,13 +53,13 @@ export type HistoryContext = {
 
 const tones: Record<Tone, string> = {
   neutral: "border-line bg-canvas text-ink-muted",
-  info: "border-[#bfdbfe] bg-status-assigned-soft text-status-assigned",
-  accepted: "border-[#ddd6fe] bg-status-accepted-soft text-status-accepted",
-  progress: "border-[#fed7aa] bg-status-progress-soft text-status-progress",
-  review: "border-[#c7d2fe] bg-status-review-soft text-status-review",
-  success: "border-[#bbf7d0] bg-status-done-soft text-status-done",
-  warning: "border-[#fde68a] bg-warning-soft text-warning",
-  cancelled: "border-[#e5e7eb] bg-status-cancelled-soft text-status-cancelled",
+  info: "border-status-assigned-line bg-status-assigned-soft text-status-assigned",
+  accepted: "border-status-accepted-line bg-status-accepted-soft text-status-accepted",
+  progress: "border-status-progress-line bg-status-progress-soft text-status-progress",
+  review: "border-status-review-line bg-status-review-soft text-status-review",
+  success: "border-status-done-line bg-status-done-soft text-status-done",
+  warning: "border-warning-line bg-warning-soft text-warning",
+  cancelled: "border-status-cancelled-line bg-status-cancelled-soft text-status-cancelled",
 };
 
 const statusLook: Record<TaskStatus, { Icon: LucideIcon; tone: Tone }> = {
@@ -367,7 +367,7 @@ function reportAccepted(data: Data): EventView {
   return {
     Icon: BadgeCheck,
     tone: "success",
-    title: versionTitle(data, (version) => `Отчёт версии ${version} принят`, "Отчёт принят"),
+    title: versionTitle(data, (version) => `Отчёт, версия ${version}, принят`, "Отчёт принят"),
     rows: submittedAt ? [{ label: "Отчёт отправлен", value: formatDateTime(submittedAt) }] : [],
     reports: true,
   };
@@ -377,7 +377,7 @@ function reportReturned(data: Data): EventView {
   return {
     Icon: Undo2,
     tone: "warning",
-    title: versionTitle(data, (version) => `Отчёт версии ${version} возвращён на доработку`, "Отчёт возвращён"),
+    title: versionTitle(data, (version) => `Отчёт, версия ${version}, возвращён на доработку`, "Отчёт возвращён"),
     rows: reasonRow(data.note, "Замечание"),
     reports: true,
   };

@@ -23,6 +23,7 @@ import { useClientKey } from "@/hooks/use-client-key";
 import type { TaskMutationResult } from "@/lib/database.types";
 import type { AppError } from "@/lib/errors";
 import type { ActionResult } from "@/lib/rpc";
+import { textLength } from "@/lib/validation";
 import { discardUpload, submitReport } from "./actions";
 import { commentMax, commentMin, maxPhotoBytes, maxPhotos, photoTypes } from "./limits";
 import type { StagedPhoto } from "./queries";
@@ -248,7 +249,7 @@ export function ReportForm({ taskId, taskVersion, staged }: ReportFormProps) {
     event.preventDefault();
     if (busy || submitting) return;
     setError(null);
-    const length = comment.trim().length;
+    const length = textLength(comment);
     const commentProblem =
       length < commentMin || length > commentMax
         ? `Напишите комментарий: от ${commentMin} до ${commentMax} символов.`
@@ -320,7 +321,7 @@ export function ReportForm({ taskId, taskVersion, staged }: ReportFormProps) {
               aria-describedby={describedBy("report-comment", commentError, true)}
             />
             <p aria-hidden className="tabular -mt-1 text-right text-xs text-ink-muted">
-              {comment.trim().length} / {commentMax}
+              {textLength(comment)} / {commentMax}
             </p>
           </Field>
 
@@ -402,7 +403,7 @@ export function ReportForm({ taskId, taskVersion, staged }: ReportFormProps) {
                       key={item.key}
                       className={
                         item.state === "failed"
-                          ? "flex items-center gap-3 rounded-lg border border-[#fecaca] bg-danger-soft p-2"
+                          ? "flex items-center gap-3 rounded-lg border border-danger-line bg-danger-soft p-2"
                           : "flex items-center gap-3 rounded-lg border border-line p-2"
                       }
                     >

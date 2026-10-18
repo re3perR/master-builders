@@ -3,14 +3,12 @@ import { cn } from "@/lib/cn";
 
 const tones = {
   neutral: "bg-canvas text-ink-muted border-line",
-  danger: "bg-danger-soft text-danger border-[#fecaca]",
-  warning: "bg-warning-soft text-warning border-[#fde68a]",
-  success: "bg-success-soft text-success border-[#bbf7d0]",
-  info: "bg-status-assigned-soft text-status-assigned border-[#bfdbfe]",
-  brand: "bg-brand-soft text-brand border-[#fed7aa]",
+  danger: "bg-danger-soft text-danger border-danger-line",
+  warning: "bg-warning-soft text-warning border-warning-line",
+  success: "bg-success-soft text-success border-success-line",
 };
 
-export type BadgeTone = keyof typeof tones;
+type BadgeTone = keyof typeof tones;
 
 export function Badge({
   className,

@@ -4,10 +4,13 @@ import { cn } from "@/lib/cn";
 import { decisionLabels } from "@/lib/labels";
 
 const styles: Record<ReportDecision, { className: string; Icon: typeof Clock3 }> = {
-  pending: { className: "border-[#c7d2fe] bg-status-review-soft text-status-review", Icon: Clock3 },
-  accepted: { className: "border-[#bbf7d0] bg-status-done-soft text-status-done", Icon: CheckCircle2 },
-  returned: { className: "border-[#fed7aa] bg-status-progress-soft text-[#9a3412]", Icon: RotateCcw },
-  cancelled: { className: "border-[#e5e7eb] bg-status-cancelled-soft text-status-cancelled", Icon: OctagonX },
+  pending: { className: "border-status-review-line bg-status-review-soft text-status-review", Icon: Clock3 },
+  accepted: { className: "border-status-done-line bg-status-done-soft text-status-done", Icon: CheckCircle2 },
+  returned: { className: "border-status-progress-line bg-status-progress-soft text-status-progress", Icon: RotateCcw },
+  cancelled: {
+    className: "border-status-cancelled-line bg-status-cancelled-soft text-status-cancelled",
+    Icon: OctagonX,
+  },
 };
 
 export function DecisionBadge({ decision, className }: { decision: ReportDecision; className?: string }) {

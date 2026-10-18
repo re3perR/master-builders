@@ -3,10 +3,10 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 const variants = {
-  info: { className: "border-[#bfdbfe] bg-status-assigned-soft text-[#1e3a8a]", Icon: Info },
-  warning: { className: "border-[#fde68a] bg-warning-soft text-[#713f12]", Icon: AlertTriangle },
-  danger: { className: "border-[#fecaca] bg-danger-soft text-[#7f1d1d]", Icon: XCircle },
-  success: { className: "border-[#bbf7d0] bg-success-soft text-[#14532d]", Icon: CheckCircle2 },
+  info: { className: "border-status-assigned-line bg-status-assigned-soft text-status-assigned", Icon: Info },
+  warning: { className: "border-warning-line bg-warning-soft text-warning", Icon: AlertTriangle },
+  danger: { className: "border-danger-line bg-danger-soft text-danger", Icon: XCircle },
+  success: { className: "border-success-line bg-success-soft text-success", Icon: CheckCircle2 },
 };
 
 type AlertProps = {

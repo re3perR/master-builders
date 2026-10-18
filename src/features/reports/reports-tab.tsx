@@ -36,7 +36,7 @@ function Decision({ report }: { report: ReportVersion }) {
     <div
       className={
         report.decision === "returned"
-          ? "rounded-lg border border-[#fed7aa] bg-status-progress-soft p-3"
+          ? "rounded-lg border border-status-progress-line bg-status-progress-soft p-3"
           : "rounded-lg border border-line bg-canvas p-3"
       }
     >

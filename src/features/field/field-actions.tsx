@@ -19,7 +19,7 @@ function ObstacleNotice({ card, canClose }: { card: TaskCard; canClose: boolean 
   return (
     <section
       aria-labelledby="open-obstacle-title"
-      className="rounded-[var(--radius-card)] border border-[#fde68a] bg-warning-soft p-4 text-[#713f12]"
+      className="rounded-[var(--radius-card)] border border-warning-line bg-warning-soft p-4 text-warning"
     >
       <div className="flex gap-3">
         <AlertOctagon aria-hidden className="mt-0.5 size-5 shrink-0" />

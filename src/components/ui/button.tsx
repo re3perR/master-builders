@@ -11,12 +11,10 @@ export const buttonVariants = cva(
         primary: "bg-brand text-white hover:bg-brand-hover",
         secondary: "border border-line bg-surface text-ink hover:bg-canvas",
         ghost: "text-ink hover:bg-canvas",
-        danger: "bg-danger text-white hover:bg-[#991b1b]",
-        link: "min-h-0 px-0 text-status-assigned underline-offset-4 hover:underline sm:min-h-0",
+        danger: "bg-danger text-white hover:bg-danger-hover",
       },
       size: {
         default: "",
-        sm: "min-h-9 px-3 text-sm sm:min-h-8",
         icon: "w-11 px-0 sm:w-10",
       },
     },

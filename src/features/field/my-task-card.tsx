@@ -86,7 +86,7 @@ export function MyTaskCard({ task, today, now }: { task: MyTask; today: string; 
       </dl>
 
       {task.obstacle ? (
-        <div className="rounded-lg border border-[#fde68a] bg-warning-soft px-3 py-2 text-sm text-[#713f12]">
+        <div className="rounded-lg border border-warning-line bg-warning-soft px-3 py-2 text-sm text-warning">
           <p className="flex items-center gap-1.5 font-medium">
             <AlertOctagon aria-hidden className="size-3.5" />
             Препятствие: {obstacleLabels[task.obstacle.category].toLowerCase()} · длится{" "}
@@ -97,7 +97,7 @@ export function MyTaskCard({ task, today, now }: { task: MyTask; today: string; 
       ) : null}
 
       {task.returned ? (
-        <div className="rounded-lg border border-[#fed7aa] bg-status-progress-soft px-3 py-2 text-sm text-[#7c2d12]">
+        <div className="rounded-lg border border-status-progress-line bg-status-progress-soft px-3 py-2 text-sm text-status-progress">
           <p className="flex items-center gap-1.5 font-medium">
             <RotateCcw aria-hidden className="size-3.5" />
             Возвращено на доработку, версия {task.returned.version}

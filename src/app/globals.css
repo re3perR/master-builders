@@ -11,30 +11,42 @@
   --color-field: #7c8997;
   --color-focus: #2563eb;
   --color-nav: #17212b;
+  --color-nav-accent: #fb923c;
 
   --color-brand: #c2410c;
   --color-brand-hover: #9a3412;
   --color-brand-soft: #fff1e8;
+  --color-brand-line: #fed7aa;
 
   --color-danger: #b91c1c;
+  --color-danger-hover: #991b1b;
   --color-danger-soft: #fef2f2;
+  --color-danger-line: #fecaca;
   --color-success: #15803d;
   --color-success-soft: #f0fdf4;
+  --color-success-line: #bbf7d0;
   --color-warning: #a16207;
   --color-warning-soft: #fefce8;
+  --color-warning-line: #fde68a;
 
   --color-status-assigned: #1d4ed8;
   --color-status-assigned-soft: #eff6ff;
+  --color-status-assigned-line: #bfdbfe;
   --color-status-accepted: #6d28d9;
   --color-status-accepted-soft: #f5f3ff;
+  --color-status-accepted-line: #ddd6fe;
   --color-status-progress: #c2410c;
   --color-status-progress-soft: #fff7ed;
+  --color-status-progress-line: #fed7aa;
   --color-status-review: #4338ca;
   --color-status-review-soft: #eef2ff;
+  --color-status-review-line: #c7d2fe;
   --color-status-done: #15803d;
   --color-status-done-soft: #f0fdf4;
+  --color-status-done-line: #bbf7d0;
   --color-status-cancelled: #4b5563;
   --color-status-cancelled-soft: #f3f4f6;
+  --color-status-cancelled-line: #e5e7eb;
 
   --radius-card: 10px;
 }
