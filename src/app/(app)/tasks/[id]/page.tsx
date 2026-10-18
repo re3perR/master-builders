@@ -29,8 +29,8 @@ export default async function TaskPage({ params, searchParams }: PageProps<"/tas
     <div className="mx-auto max-w-4xl">
       <TaskHeader card={card} viewer={viewer} />
       <div className="mb-5 flex flex-col gap-3">
-        <FieldActions card={card} viewer={viewer} />
-        <ReviewActions card={card} viewer={viewer} />
+        <FieldActions card={card} viewer={viewer} tab={tab} />
+        <ReviewActions card={card} viewer={viewer} tab={tab} />
         <DispatcherActions card={card} viewer={viewer} />
       </div>
       <TaskTabs taskId={card.id} active={tab} counts={{ discussion: card.message_count, reports: card.report_count }} />

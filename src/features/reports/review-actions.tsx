@@ -1,6 +1,7 @@
 import { CalendarClock, Clock3, Eye } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import type { TaskTab } from "@/features/tasks/components/task-tabs";
 import type { TaskCard } from "@/features/tasks/types";
 import type { Viewer } from "@/lib/auth";
 import { formatDateTime, formatDuration } from "@/lib/time";
@@ -12,7 +13,7 @@ function passedDeadline(card: TaskCard, submittedAt: string) {
   return { submittedBefore: new Date(submittedAt).getTime() <= end };
 }
 
-export function ReviewActions({ card, viewer }: { card: TaskCard; viewer: Viewer }) {
+export function ReviewActions({ card, viewer, tab }: { card: TaskCard; viewer: Viewer; tab: TaskTab }) {
   const report = card.pending_report;
   const role = viewer.profile.role;
   if (card.status !== "InReview" || !report || role === "foreman") return null;
@@ -58,13 +59,16 @@ export function ReviewActions({ card, viewer }: { card: TaskCard; viewer: Viewer
             reportId={report.id}
             reportVersion={report.version}
           />
-          <Link
-            href={`/tasks/${card.id}?tab=reports`}
-            className={buttonVariants({ variant: "ghost", className: "w-full sm:w-auto" })}
-          >
-            <Eye aria-hidden className="size-4" />
-            Смотреть отчёт
-          </Link>
+          {tab !== "reports" ? (
+            <Link
+              href={`/tasks/${card.id}?tab=reports`}
+              scroll={false}
+              className={buttonVariants({ variant: "ghost", className: "w-full sm:w-auto" })}
+            >
+              <Eye aria-hidden className="size-4" />
+              Открыть отчёт
+            </Link>
+          ) : null}
         </div>
       ) : null}
     </section>

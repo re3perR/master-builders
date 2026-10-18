@@ -1,6 +1,3 @@
-import { Camera } from "lucide-react";
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { TaskCard } from "@/features/tasks/types";
@@ -62,7 +59,6 @@ export async function ReportsTab({ card, viewer }: { card: TaskCard; viewer: Vie
   const assigned = viewer.profile.role === "foreman" && viewer.crew?.id === card.crew_id;
 
   if (!reports.length) {
-    const canReport = assigned && card.status === "InProgress" && !card.open_obstacle;
     return (
       <Card>
         <EmptyState
@@ -72,17 +68,9 @@ export async function ReportsTab({ card, viewer }: { card: TaskCard; viewer: Vie
               ? "По этому заданию отчёт не отправляли."
               : assigned
                 ? card.open_obstacle
-                  ? "Отчёт можно будет отправить после того, как препятствие будет снято."
+                  ? "Отчёт можно будет отправить после того, как препятствие будет закрыто."
                   : "Когда работа будет выполнена, отправьте фотоотчёт: комментарий и от 1 до 10 фото."
                 : "Бригадир отправит фотоотчёт, когда закончит работу. Список обновится после отправки."
-          }
-          action={
-            canReport ? (
-              <Link href={`/tasks/${card.id}/report`} className={buttonVariants()}>
-                <Camera aria-hidden className="size-4" />
-                Отправить отчёт
-              </Link>
-            ) : undefined
           }
         />
       </Card>

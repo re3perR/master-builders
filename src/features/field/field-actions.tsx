@@ -1,7 +1,8 @@
-import { AlertOctagon, Camera } from "lucide-react";
+import { AlertOctagon, Camera, Eye } from "lucide-react";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
+import type { TaskTab } from "@/features/tasks/components/task-tabs";
 import type { TaskCard } from "@/features/tasks/types";
 import type { Viewer } from "@/lib/auth";
 import { executionStatuses, obstacleLabels } from "@/lib/labels";
@@ -46,13 +47,13 @@ function ReportButton({ card, returned }: { card: TaskCard; returned: Returned |
   const label = returned ? "Отправить исправленный отчёт" : "Отправить отчёт";
   if (card.open_obstacle) {
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 sm:items-start">
         <Button disabled aria-describedby="report-blocked" className="w-full sm:w-auto">
           <Camera aria-hidden className="size-4" />
           {label}
         </Button>
         <p id="report-blocked" className="text-sm text-ink-muted">
-          Отчёт можно отправить после того, как препятствие будет снято.
+          Отчёт можно отправить после того, как препятствие будет закрыто.
         </p>
       </div>
     );
@@ -65,7 +66,7 @@ function ReportButton({ card, returned }: { card: TaskCard; returned: Returned |
   );
 }
 
-function ForemanPanel({ card, returned }: { card: TaskCard; returned: Returned | null }) {
+function ForemanPanel({ card, returned, tab }: { card: TaskCard; returned: Returned | null; tab: TaskTab }) {
   const canReportObstacle = executionStatuses.includes(card.status) && !card.open_obstacle;
 
   if (card.status === "Cancelled") return null;
@@ -85,12 +86,16 @@ function ForemanPanel({ card, returned }: { card: TaskCard; returned: Returned |
             {card.pending_report ? ` ${formatDateTime(card.pending_report.submitted_at)}` : ""} и ждёт проверки
             диспетчером.
           </p>
-          <Link
-            href={`/tasks/${card.id}?tab=reports`}
-            className={buttonVariants({ variant: "secondary", className: "mt-3 w-full sm:w-auto" })}
-          >
-            Открыть отчёт
-          </Link>
+          {tab !== "reports" ? (
+            <Link
+              href={`/tasks/${card.id}?tab=reports`}
+              scroll={false}
+              className={buttonVariants({ variant: "secondary", className: "mt-3 w-full sm:w-auto" })}
+            >
+              <Eye aria-hidden className="size-4" />
+              Открыть отчёт
+            </Link>
+          ) : null}
         </CardBody>
       </Card>
     );
@@ -124,7 +129,7 @@ function ForemanPanel({ card, returned }: { card: TaskCard; returned: Returned |
   );
 }
 
-export function FieldActions({ card, viewer }: { card: TaskCard; viewer: Viewer }) {
+export function FieldActions({ card, viewer, tab }: { card: TaskCard; viewer: Viewer; tab: TaskTab }) {
   const role = viewer.profile.role;
   const assigned = role === "foreman" && viewer.crew?.id === card.crew_id;
   const canClose = (assigned || role === "dispatcher") && executionStatuses.includes(card.status);
@@ -133,7 +138,7 @@ export function FieldActions({ card, viewer }: { card: TaskCard; viewer: Viewer 
   return (
     <>
       <ObstacleNotice card={card} canClose={canClose} />
-      {assigned ? <ForemanPanel card={card} returned={returned} /> : null}
+      {assigned ? <ForemanPanel card={card} returned={returned} tab={tab} /> : null}
       {!assigned && returned ? <ReturnNote returned={returned} /> : null}
     </>
   );
