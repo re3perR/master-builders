@@ -23,7 +23,13 @@ type SiteResult = {
   updated_at: string;
   archived_at?: string | null;
 };
-type CrewResult = { result: string; crew_id: string; changed: boolean; updated_at: string };
+type CrewResult = {
+  result: string;
+  crew_id: string;
+  changed: boolean;
+  updated_at: string;
+  archived_at?: string | null;
+};
 type TaskResult = { result: string; task_id: string; status: string; version: number; report_id?: string };
 
 const hour = 3600 * 1000;
@@ -56,6 +62,30 @@ async function createTask(db: Db, siteId: string, offsetHours = 0) {
     p_priority: "normal",
     p_planned_start: slot(offsetHours),
     p_planned_end: slot(offsetHours + 4),
+    p_client_key: key(),
+  });
+}
+
+async function setupCall(db: Db, name: "archive_crew" | "restore_crew", crewId: string) {
+  await db.query("savepoint setup_call");
+  try {
+    await db.query("set local role service_role");
+    const { rows } = await db.query(`select public.${name}($1) as result`, [crewId]);
+    await db.query("reset role");
+    await db.query("release savepoint setup_call");
+    return rows[0].result as CrewResult;
+  } catch (error) {
+    await db.query("rollback to savepoint setup_call");
+    await db.query("reset role");
+    throw error;
+  }
+}
+
+async function cancel(db: Db, userId: string, taskId: string) {
+  return rpc<TaskResult>(db, userId, "cancel_task", {
+    p_task_id: taskId,
+    p_expected_version: await version(db, taskId),
+    p_reason: "Работы перенесены в другой договор",
     p_client_key: key(),
   });
 }
@@ -556,6 +586,88 @@ describe("бригады", () => {
       );
       assert.equal(summaries.at(-1)?.id, crews.lebedev);
       assert.ok(summaries.at(-1)?.archived_at);
+    }));
+
+  it("архивировать и восстанавливать бригаду можно только при настройке системы", () =>
+    inRollback(async (db) => {
+      for (const user of [users.dispatcherNorth, users.managerNorth, users.petrov, null]) {
+        for (const name of ["archive_crew", "restore_crew"]) {
+          await assert.rejects(rpc(db, user, name, { p_crew_id: crews.petrov }), rejectsWith("42501"), name);
+        }
+      }
+      await assert.rejects(setupCall(db, "archive_crew", key()), rejectsWith("MB404", "crew_not_found"));
+      const [crew] = await select<{ archived_at: string | null }>(
+        db,
+        users.managerNorth,
+        "select archived_at from public.crews where id = $1",
+        [crews.petrov],
+      );
+      assert.equal(crew.archived_at, null);
+    }));
+
+  it("бригада с активными заданиями, включая проверку, не архивируется", () =>
+    inRollback(async (db) => {
+      await assert.rejects(setupCall(db, "archive_crew", crews.gusev), (error) => {
+        assert.equal(errorCode(error), "MB423");
+        assert.equal((error as Error).message, "active_tasks");
+        assert.equal(JSON.parse((error as { detail: string }).detail).active_tasks, 4);
+        return true;
+      });
+
+      for (const number of [17, 18, 19]) await cancel(db, users.dispatcherSouth, task(number));
+      const [review] = await select<{ status: string }>(
+        db,
+        users.managerSouth,
+        "select status from public.tasks where id = $1",
+        [task(20)],
+      );
+      assert.equal(review.status, "InReview");
+      await assert.rejects(setupCall(db, "archive_crew", crews.gusev), rejectsWith("MB423", "active_tasks"));
+
+      await cancel(db, users.dispatcherSouth, task(20));
+      const archived = await setupCall(db, "archive_crew", crews.gusev);
+      assert.equal(archived.changed, true);
+      assert.ok(archived.archived_at);
+      const again = await setupCall(db, "archive_crew", crews.gusev);
+      assert.equal(again.changed, false);
+      assert.equal(again.archived_at, archived.archived_at);
+
+      const history = await select(db, users.gusev, "select 1 from public.tasks where crew_id = $1", [crews.gusev]);
+      assert.equal(history.length, 6);
+    }));
+
+  it("архивная бригада не выбирается для новых заданий, после восстановления — выбирается", () =>
+    inRollback(async (db) => {
+      for (const number of [17, 18, 19, 20]) await cancel(db, users.dispatcherSouth, task(number));
+      await setupCall(db, "archive_crew", crews.gusev);
+
+      const create = () =>
+        rpc<TaskResult>(db, users.dispatcherSouth, "create_task", {
+          p_title: "Замена светильников в холле",
+          p_description: "Заменить светильники в холле первого этажа",
+          p_site_id: sites.office,
+          p_crew_id: crews.gusev,
+          p_priority: "normal",
+          p_planned_start: slot(0),
+          p_planned_end: slot(4),
+          p_client_key: key(),
+        });
+      await assert.rejects(create(), rejectsWith("MB422", "archived_reference"));
+      await assert.rejects(
+        rpc(db, users.dispatcherSouth, "update_crew", {
+          p_crew_id: crews.gusev,
+          p_name: "Ремонтная бригада №3",
+          p_members: [],
+          p_client_key: key(),
+        }),
+        rejectsWith("MB423", "crew_archived"),
+      );
+
+      const restored = await setupCall(db, "restore_crew", crews.gusev);
+      assert.equal(restored.changed, true);
+      assert.equal(restored.archived_at, null);
+      assert.equal((await setupCall(db, "restore_crew", crews.gusev)).changed, false);
+      assert.equal((await create()).result, "ok");
     }));
 
   it("сводка по бригаде считает активные задания и открытые препятствия", () =>

@@ -13,6 +13,7 @@ export type CrewMutationResult = {
   crew_id: string;
   changed: boolean;
   updated_at: string;
+  archived_at?: string | null;
 };
 
 export type SiteSummary = {
@@ -66,6 +67,8 @@ export type FeatureFunctions = {
     },
     CrewMutationResult
   >;
+  archive_crew: Fn<{ p_crew_id: string }, CrewMutationResult>;
+  restore_crew: Fn<{ p_crew_id: string }, CrewMutationResult>;
   site_summaries: Fn<{ p_query?: string | null; p_include_archived?: boolean }, SiteSummary[]>;
   crew_summaries: Fn<Record<string, never>, CrewSummary[]>;
 };
