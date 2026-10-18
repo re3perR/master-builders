@@ -150,7 +150,7 @@ export function TaskFilterPanel({ filters, options, today, activeCount, onApply 
               value={text}
               maxLength={100}
               enterKeyHint="search"
-              placeholder="Номер, название, объект, адрес"
+              placeholder="Номер, название, адрес"
               onChange={(event) => setText(event.target.value)}
               className="pl-9"
             />
@@ -261,7 +261,7 @@ export function TaskFilterPanel({ filters, options, today, activeCount, onApply 
               </p>
             ) : null}
             <p id="filter-date-hint" className="text-sm text-ink-muted">
-              Учитываются задания, чьи сроки захватывают выбранные дни. {timeZoneLabel()}.
+              Задания, сроки которых приходятся на выбранные дни. {timeZoneLabel()}.
             </p>
           </div>
         </div>

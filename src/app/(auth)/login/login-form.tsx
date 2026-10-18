@@ -31,7 +31,7 @@ export function LoginForm({ next, expired, demo }: LoginFormProps) {
     <>
       <form action={action} className="flex flex-col gap-4" noValidate>
         {expired && !state.error ? (
-          <Alert variant="warning">Сессия завершилась. Войдите снова, чтобы продолжить работу.</Alert>
+          <Alert variant="warning">Сессия истекла. Войдите снова, чтобы продолжить работу.</Alert>
         ) : null}
         {state.error ? <Alert variant="danger">{state.error}</Alert> : null}
         <input type="hidden" name="next" value={next ?? ""} />
@@ -61,7 +61,10 @@ export function LoginForm({ next, expired, demo }: LoginFormProps) {
         <Button type="submit" disabled={pending} className="mt-1 w-full">
           {pending ? "Входим…" : "Войти"}
         </Button>
-        <Link href="/forgot-password" className="text-center text-sm text-ink-muted underline-offset-4 hover:underline">
+        <Link
+          href="/forgot-password"
+          className="flex min-h-11 items-center justify-center text-sm text-ink-muted underline-offset-4 hover:underline"
+        >
           Забыли пароль?
         </Link>
       </form>

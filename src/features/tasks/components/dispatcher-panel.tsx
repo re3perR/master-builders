@@ -79,7 +79,7 @@ export function DispatcherPanel({ card, crews }: { card: TaskCard; crews: CrewCh
           ) : null}
           <DialogContent
             title="Изменить задание"
-            description={`${taskCode(card.number)}: название, описание, приоритет и снимок адреса.`}
+            description={`${taskCode(card.number)}: название, описание, приоритет и адрес объекта на момент создания.`}
           >
             <EditForm card={card} available={editable} onDone={finish} />
           </DialogContent>

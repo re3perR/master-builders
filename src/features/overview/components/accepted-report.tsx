@@ -134,8 +134,11 @@ function AcceptedTable({ tasks, now }: { tasks: AcceptedTask[]; now: number }) {
       <ul className="flex flex-col gap-3 md:hidden">
         {tasks.map((task) => (
           <li key={task.report_id}>
-            <Card className="px-4 py-3 text-sm">
-              <Link href={taskLink(task.task_id, "reports")} className="block text-base font-medium">
+            <Card className="relative px-4 py-3 text-sm">
+              <Link
+                href={taskLink(task.task_id, "reports")}
+                className="block text-base font-medium after:absolute after:inset-0 after:rounded-[var(--radius-card)]"
+              >
                 <span className="tabular text-ink-muted">{taskCode(task.number)}</span> {task.title}
               </Link>
               <p className="mt-0.5 text-ink-muted">

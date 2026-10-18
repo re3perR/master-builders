@@ -87,7 +87,7 @@ function validationMessage(message: string, detail: Record<string, unknown>) {
         : "В составе бригады слишком много человек.";
     }
     case "nothing_changed":
-      return "Новые значения совпадают с текущими.";
+      return "Изменений нет: данные совпадают с сохранёнными.";
     case "unsupported_file_type":
       return "Поддерживаются только фотографии JPEG, PNG и WebP.";
     case "file_too_large":

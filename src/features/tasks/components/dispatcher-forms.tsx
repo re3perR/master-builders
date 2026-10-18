@@ -15,12 +15,14 @@ import type { ActionResult } from "@/lib/rpc";
 import { statusLabels, taskCode } from "@/lib/labels";
 import { timeZoneLabel, toLocalInput } from "@/lib/time";
 import { cancelTask, reassignTask, rescheduleTask, updateTaskDetails } from "../actions";
+import { limits } from "../limits";
 import type { CrewChoice, SaveResult, TaskCard } from "../types";
 import {
   checkDetails,
   checkReason,
   checkReassign,
   checkReschedule,
+  lengthHint,
   type DetailsInput,
   type FieldErrors,
   type ReassignInput,
@@ -160,7 +162,7 @@ export function EditForm({ card, available, onDone }: FormProps) {
       (key) => updateTaskDetails(card.id, card.version, values, key),
       (data) => {
         mutation.saved();
-        onDone(data.changed ? "Изменения сохранены." : "Задание уже содержит эти значения, изменений нет.");
+        onDone(data.changed ? "Изменения сохранены." : "Изменений нет: данные совпадают с сохранёнными.");
       },
     );
   }
@@ -177,7 +179,7 @@ export function EditForm({ card, available, onDone }: FormProps) {
         label="Название"
         required
         error={mutation.errors.title}
-        hint={`${values.title.trim().length} из 160 символов`}
+        hint={lengthHint(values.title, limits.title)}
       >
         <Input
           id="edit-title"
@@ -193,7 +195,7 @@ export function EditForm({ card, available, onDone }: FormProps) {
         label="Описание работ"
         required
         error={mutation.errors.description}
-        hint={`${values.description.trim().length} из 5000 символов`}
+        hint={lengthHint(values.description, limits.description)}
       >
         <Textarea
           id="edit-description"
@@ -231,7 +233,7 @@ export function EditForm({ card, available, onDone }: FormProps) {
           onChange={(event) => update("access_note_snapshot", event.target.value)}
         />
       </Field>
-      {unchanged ? <Alert>Вы ничего не изменили.</Alert> : null}
+      {unchanged ? <Alert>Изменений нет: данные совпадают с сохранёнными.</Alert> : null}
       <Footer pending={mutation.pending} available={available} label="Сохранить изменения" pendingLabel="Сохраняем…" />
     </form>
   );

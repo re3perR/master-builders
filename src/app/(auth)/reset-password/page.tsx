@@ -21,7 +21,10 @@ export default async function ResetPasswordPage() {
       ) : (
         <div className="mt-4 flex flex-col gap-4">
           <Alert variant="warning">Ссылка для смены пароля устарела или уже использована.</Alert>
-          <Link href="/forgot-password" className="text-sm underline underline-offset-4">
+          <Link
+            href="/forgot-password"
+            className="inline-flex min-h-11 items-center text-sm underline underline-offset-4"
+          >
             Запросить новую ссылку
           </Link>
         </div>
